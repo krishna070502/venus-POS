@@ -83,7 +83,7 @@ app_license = "agpl-3.0"
 # ------------
 
 # before_install = "venus_chicken.install.before_install"
-# after_install = "venus_chicken.install.after_install"
+after_install = "venus_chicken.install.after_install"
 
 # Uninstallation
 # ------------
@@ -136,35 +136,24 @@ app_license = "agpl-3.0"
 # Document Events
 # ---------------
 # Hook on document methods and events
+# Note: DocType controller lifecycle methods (on_submit, on_cancel, etc.)
+# are automatically called by Frappe. Only use doc_events for external handlers.
 
 # doc_events = {
-# 	"*": {
+# 	"DocType": {
 # 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
 # 	}
 # }
 
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
-# 	"all": [
-# 		"venus_chicken.tasks.all"
-# 	],
-# 	"daily": [
-# 		"venus_chicken.tasks.daily"
-# 	],
-# 	"hourly": [
-# 		"venus_chicken.tasks.hourly"
-# 	],
-# 	"weekly": [
-# 		"venus_chicken.tasks.weekly"
-# 	],
-# 	"monthly": [
-# 		"venus_chicken.tasks.monthly"
-# 	],
-# }
+scheduler_events = {"daily": ["venus_chicken.tasks.send_daily_stock_alerts"]}
+
+# Fixtures
+# --------
+# Roles are created via after_install hook in install.py
+# fixtures = []
 
 # Testing
 # -------
@@ -241,4 +230,3 @@ app_license = "agpl-3.0"
 # default_log_clearing_doctypes = {
 # 	"Logging DocType Name": 30  # days to retain logs
 # }
-

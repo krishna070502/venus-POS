@@ -1,0 +1,24 @@
+{
+ "creation": "2025-12-10 10:00:00.000000",
+ "doctype": "Page",
+ "idx": 0,
+ "modified": "2025-12-10 10:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Venus Chicken",
+ "name": "pos-billing",
+ "owner": "Administrator",
+ "page_name": "POS Billing",
+ "roles": [
+  {
+   "role": "Cashier"
+  },
+  {
+   "role": "Shop Manager"
+  },
+  {
+   "role": "System Manager"
+  }
+ ],
+ "standard": "Yes",
+ "title": "POS Billing"
+}

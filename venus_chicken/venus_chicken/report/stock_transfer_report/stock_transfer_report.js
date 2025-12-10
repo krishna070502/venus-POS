@@ -1,0 +1,45 @@
+// Copyright (c) 2025, Gopal and contributors
+// For license information, please see license.txt
+
+frappe.query_reports["Stock Transfer Report"] = {
+	"filters": [
+		{
+			"fieldname": "from_date",
+			"label": __("From Date"),
+			"fieldtype": "Date",
+			"default": frappe.datetime.add_months(frappe.datetime.get_today(), -1),
+			"reqd": 1
+		},
+		{
+			"fieldname": "to_date",
+			"label": __("To Date"),
+			"fieldtype": "Date",
+			"default": frappe.datetime.get_today(),
+			"reqd": 1
+		},
+		{
+			"fieldname": "from_shop",
+			"label": __("From Shop"),
+			"fieldtype": "Link",
+			"options": "Shop"
+		},
+		{
+			"fieldname": "to_shop",
+			"label": __("To Shop"),
+			"fieldtype": "Link",
+			"options": "Shop"
+		},
+		{
+			"fieldname": "status",
+			"label": __("Status"),
+			"fieldtype": "Select",
+			"options": "\nDraft\nIn Transit\nCompleted\nCancelled"
+		},
+		{
+			"fieldname": "stock_type",
+			"label": __("Stock Type"),
+			"fieldtype": "Select",
+			"options": "\nRaw Meat\nProcessed Meat"
+		}
+	]
+};

@@ -1,0 +1,89 @@
+{
+ "actions": [],
+ "creation": "2025-12-08 10:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "product",
+  "column_break_2",
+  "qty_in_nos",
+  "raw_weight_in_kg",
+  "processed_weight_out_kg",
+  "column_break_6",
+  "wastage_kg",
+  "wastage_pct",
+  "wastage_status"
+ ],
+ "fields": [
+  {
+   "fieldname": "product",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Product",
+   "options": "Product",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "qty_in_nos",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Qty IN (Nos)",
+   "reqd": 1
+  },
+  {
+   "fieldname": "raw_weight_in_kg",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Raw Weight IN (Kg)",
+   "precision": "3",
+   "reqd": 1
+  },
+  {
+   "fieldname": "processed_weight_out_kg",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Processed Weight OUT (Kg)",
+   "precision": "3",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_6",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "wastage_kg",
+   "fieldtype": "Float",
+   "label": "Wastage (Kg)",
+   "precision": "3",
+   "read_only": 1
+  },
+  {
+   "fieldname": "wastage_pct",
+   "fieldtype": "Percent",
+   "label": "Wastage %",
+   "read_only": 1
+  },
+  {
+   "fieldname": "wastage_status",
+   "fieldtype": "Data",
+   "label": "Wastage Status",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-12-08 10:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Venus Chicken",
+ "name": "Processing Entry Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

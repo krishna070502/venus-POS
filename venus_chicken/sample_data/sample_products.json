@@ -1,0 +1,37 @@
+[
+  {
+    "doctype": "Product",
+    "item_code": "CHK-BREAST",
+    "item_name": "Chicken Breast",
+    "base_price": 280,
+    "purchase_price": 200
+  },
+  {
+    "doctype": "Product",
+    "item_code": "CHK-LEGS",
+    "item_name": "Chicken Legs",
+    "base_price": 220,
+    "purchase_price": 160
+  },
+  {
+    "doctype": "Product",
+    "item_code": "CHK-WINGS",
+    "item_name": "Chicken Wings",
+    "base_price": 240,
+    "purchase_price": 170
+  },
+  {
+    "doctype": "Product",
+    "item_code": "CHK-WHOLE",
+    "item_name": "Whole Chicken",
+    "base_price": 200,
+    "purchase_price": 140
+  },
+  {
+    "doctype": "Product",
+    "item_code": "CHK-MINCE",
+    "item_name": "Chicken Mince",
+    "base_price": 260,
+    "purchase_price": 180
+  }
+]

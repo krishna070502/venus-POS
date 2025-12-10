@@ -1,0 +1,60 @@
+[
+  {
+    "doctype": "Shop",
+    "shop_name": "Venus Main Branch",
+    "location": "MG Road, Bangalore",
+    "default_wastage_pct": 30,
+    "stock_items": [
+      {
+        "product": "CHK-BREAST",
+        "qty_no": 50,
+        "raw_weight_kg": 150,
+        "processed_weight_kg": 105
+      },
+      {
+        "product": "CHK-LEGS",
+        "qty_no": 40,
+        "raw_weight_kg": 120,
+        "processed_weight_kg": 84
+      },
+      {
+        "product": "CHK-WINGS",
+        "qty_no": 60,
+        "raw_weight_kg": 100,
+        "processed_weight_kg": 70
+      },
+      {
+        "product": "CHK-WHOLE",
+        "qty_no": 30,
+        "raw_weight_kg": 90,
+        "processed_weight_kg": 63
+      }
+    ]
+  },
+  {
+    "doctype": "Shop",
+    "shop_name": "Venus Jayanagar",
+    "location": "Jayanagar 4th Block, Bangalore",
+    "default_wastage_pct": 28,
+    "stock_items": [
+      {
+        "product": "CHK-BREAST",
+        "qty_no": 40,
+        "raw_weight_kg": 120,
+        "processed_weight_kg": 86
+      },
+      {
+        "product": "CHK-MINCE",
+        "qty_no": 35,
+        "raw_weight_kg": 80,
+        "processed_weight_kg": 58
+      },
+      {
+        "product": "CHK-WHOLE",
+        "qty_no": 25,
+        "raw_weight_kg": 75,
+        "processed_weight_kg": 54
+      }
+    ]
+  }
+]
