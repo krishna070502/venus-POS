@@ -59,7 +59,8 @@ def execute(filters=None):
 	if filters.get("from_date") and filters.get("to_date"):
 		message += f" | Period: {filters.get('from_date')} to {filters.get('to_date')}"
 
-	return columns, data, message, chart, summary
+	# skip_total_row=1 prevents Frappe's auto-generated total row (we have our own custom Total row)
+	return columns, data, message, chart, summary, 1
 
 
 def get_columns():
