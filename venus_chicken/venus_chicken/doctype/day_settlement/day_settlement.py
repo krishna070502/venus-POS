@@ -44,8 +44,9 @@ class DaySettlement(Document):
 			self.date = today()
 
 	def validate(self):
-		"""Calculate total sales and variance"""
+		"""Calculate total sales, expenses and variance"""
 		self.calculate_total_sales()
+		self.calculate_total_expenses()
 		self.calculate_variance()
 
 	def calculate_total_sales(self):
@@ -91,10 +92,31 @@ class DaySettlement(Document):
 		)
 		self.cash_sales = flt(cash_total[0][0]) if cash_total and cash_total[0][0] else 0
 
+	def calculate_total_expenses(self):
+		"""Calculate total expenses from submitted Expense entries for the day"""
+		expenses_total = frappe.db.sql(
+			"""
+			SELECT SUM(amount)
+			FROM `tabExpense`
+			WHERE shop = %s
+			AND date = %s
+			AND docstatus = 1
+		""",
+			(self.shop, self.date),
+		)
+		self.total_expenses = flt(expenses_total[0][0]) if expenses_total and expenses_total[0][0] else 0
+
+		# Calculate expected cash after deducting expenses
+		self.expected_cash_after_expenses = flt(self.cash_sales) - flt(self.total_expenses)
+
+		# Calculate total payment to be paid (Total Sales - Total Expenses)
+		self.total_to_pay = flt(self.total_sales) - flt(self.total_expenses)
+
 	def calculate_variance(self):
 		"""Calculate variance between expected and actual collections"""
 		self.upi_variance = flt(self.upi_sales) - flt(self.actual_upi_collected)
-		self.cash_variance = flt(self.cash_sales) - flt(self.actual_cash_collected)
+		# Cash variance is calculated against expected cash AFTER expenses
+		self.cash_variance = flt(self.expected_cash_after_expenses) - flt(self.actual_cash_collected)
 
 	def before_save(self):
 		"""Validate shop access"""

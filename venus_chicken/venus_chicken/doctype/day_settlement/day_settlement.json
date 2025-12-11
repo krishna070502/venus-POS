@@ -14,10 +14,16 @@
   "column_break_13",
   "upi_sales",
   "cash_sales",
+  "expenses_section",
+  "total_expenses",
+  "column_break_expenses",
+  "expected_cash_after_expenses",
   "section_break_14",
   "actual_upi_collected",
   "column_break_15",
   "actual_cash_collected",
+  "total_to_pay_section",
+  "total_to_pay",
   "section_break_8",
   "upi_variance",
   "column_break_16",
@@ -65,9 +71,34 @@
   {
    "fieldname": "cash_sales",
    "fieldtype": "Currency",
-   "label": "Expected Cash",
+   "label": "Expected Cash (Before Expenses)",
    "precision": "2",
    "read_only": 1
+  },
+  {
+   "fieldname": "expenses_section",
+   "fieldtype": "Section Break",
+   "label": "Expenses"
+  },
+  {
+   "fieldname": "total_expenses",
+   "fieldtype": "Currency",
+   "label": "Total Expenses",
+   "precision": "2",
+   "read_only": 1,
+   "description": "Sum of all submitted expenses for this shop on this date"
+  },
+  {
+   "fieldname": "column_break_expenses",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "expected_cash_after_expenses",
+   "fieldtype": "Currency",
+   "label": "Expected Cash (After Expenses)",
+   "precision": "2",
+   "read_only": 1,
+   "description": "Expected Cash - Total Expenses"
   },
   {
    "fieldname": "section_break_14",
@@ -91,6 +122,20 @@
    "label": "Actual Cash Collected",
    "precision": "2",
    "reqd": 1
+  },
+  {
+   "fieldname": "total_to_pay_section",
+   "fieldtype": "Section Break",
+   "label": "Total Payment"
+  },
+  {
+   "fieldname": "total_to_pay",
+   "fieldtype": "Currency",
+   "label": "Total Payment to be Paid",
+   "precision": "2",
+   "read_only": 1,
+   "description": "Total Sales - Total Expenses",
+   "bold": 1
   },
   {
    "fieldname": "section_break_8",
@@ -146,8 +191,14 @@
   }
  ],
  "index_web_pages_for_search": 1,
- "links": [],
- "modified": "2025-12-08 10:00:00.000000",
+ "links": [
+  {
+   "link_doctype": "Expense",
+   "link_fieldname": "shop",
+   "group": "Expenses"
+  }
+ ],
+ "modified": "2025-12-11 10:00:00.000000",
  "modified_by": "Administrator",
  "module": "Venus Chicken",
  "name": "Day Settlement",
