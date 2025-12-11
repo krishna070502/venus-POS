@@ -330,17 +330,18 @@ class POSBilling {
 				
 				/* Tablet landscape (900px - 1024px) */
 				@media (max-width: 1024px) {
-					.pos-container { padding: 8px; height: 100vh; }
+					.pos-container { padding: 8px; height: auto; min-height: 100vh; position: relative; overflow-y: auto; }
 					.pos-header { padding: 10px 14px; margin-bottom: 8px; border-radius: 10px; }
 					.pos-header h2 { font-size: 1.1rem; }
 					.pos-header p { display: none; }
 					.pos-main-layout {
 						grid-template-columns: 220px 1fr 280px;
 						gap: 8px;
-						height: calc(100vh - 70px);
+						height: auto;
+						min-height: calc(100vh - 70px);
 					}
-					.pos-panel { padding: 12px !important; border-radius: 10px !important; }
-					.numpad-panel { overflow: visible !important; }
+					.pos-panel { padding: 12px !important; border-radius: 10px !important; overflow-y: auto !important; }
+					.numpad-panel { overflow-y: auto !important; }
 					.numpad-btn { padding: 8px !important; font-size: 0.9rem !important; border-radius: 8px !important; }
 					.numpad { gap: 5px !important; flex: 0 0 auto !important; }
 					.product-card { padding: 10px !important; border-radius: 10px !important; }
@@ -365,16 +366,17 @@ class POSBilling {
 				
 				/* Tablet portrait (768px - 900px) */
 				@media (max-width: 900px) {
-					.pos-container { padding: 6px; }
+					.pos-container { padding: 6px; height: auto; min-height: 100vh; position: relative; overflow-y: auto; }
 					.pos-header { padding: 8px 12px; margin-bottom: 6px; }
 					.pos-header h2 { font-size: 1rem; }
 					.pos-main-layout {
 						grid-template-columns: 180px 1fr 220px;
 						gap: 6px;
-						height: calc(100vh - 56px);
+						height: auto;
+						min-height: calc(100vh - 56px);
 					}
-					.pos-panel { padding: 8px !important; }
-					.numpad-panel { overflow: visible !important; }
+					.pos-panel { padding: 8px !important; overflow-y: auto !important; }
+					.numpad-panel { overflow-y: auto !important; }
 					.numpad-btn { padding: 6px !important; font-size: 0.85rem !important; }
 					.numpad { gap: 4px !important; flex: 0 0 auto !important; }
 					.product-card { padding: 8px !important; }
@@ -408,10 +410,12 @@ class POSBilling {
 				
 				/* Small tablet / Large phone (below 768px) - 2 column layout */
 				@media (max-width: 768px) {
+					.pos-container { height: auto; min-height: 100vh; position: relative; overflow-y: auto; }
 					.pos-main-layout {
 						grid-template-columns: 1fr 220px;
 						grid-template-rows: 1fr;
-						height: calc(100vh - 55px);
+						height: auto;
+						min-height: calc(100vh - 55px);
 					}
 					.numpad-panel { display: none !important; }
 					.cart-panel { grid-row: 1 / -1; }
