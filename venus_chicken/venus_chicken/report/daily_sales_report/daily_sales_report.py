@@ -8,7 +8,9 @@ from frappe.utils import flt
 def execute(filters=None):
 	columns = get_columns()
 	data = get_data(filters)
-	return columns, data
+	chart = get_chart_data(data)
+	summary = get_summary(data, filters)
+	return columns, data, None, chart, summary
 
 
 def get_columns():
@@ -58,3 +60,133 @@ def get_data(filters):
 	"""
 
 	return frappe.db.sql(query, as_dict=1)
+
+
+def get_summary(data, filters):
+	"""Generate summary cards"""
+	if not data:
+		return []
+
+	total_invoices = len(data)
+	total_amount = sum(flt(row.get("total_amount", 0)) for row in data)
+	total_kg = sum(flt(row.get("total_kg", 0)) for row in data)
+	avg_invoice_value = total_amount / total_invoices if total_invoices > 0 else 0
+	avg_rate_per_kg = total_amount / total_kg if total_kg > 0 else 0
+
+	# Get payment mode breakdown
+	payment_query = """
+		SELECT
+			payment_mode,
+			SUM(total_amount) as amount,
+			COUNT(*) as count
+		FROM `tabPOS Invoice`
+		WHERE docstatus = 1
+	"""
+
+	conditions = []
+	if filters and filters.get("shop"):
+		conditions.append(f"shop = '{filters.get('shop')}'")
+	if filters and filters.get("from_date"):
+		conditions.append(f"posting_date >= '{filters.get('from_date')}'")
+	if filters and filters.get("to_date"):
+		conditions.append(f"posting_date <= '{filters.get('to_date')}'")
+
+	if conditions:
+		payment_query += " AND " + " AND ".join(conditions)
+
+	payment_query += " GROUP BY payment_mode"
+
+	payment_data = frappe.db.sql(payment_query, as_dict=1)
+
+	cash_amount = 0
+	upi_amount = 0
+	cash_count = 0
+	upi_count = 0
+
+	for row in payment_data:
+		if row.get("payment_mode") == "Cash":
+			cash_amount = flt(row.get("amount", 0))
+			cash_count = row.get("count", 0)
+		elif row.get("payment_mode") == "UPI":
+			upi_amount = flt(row.get("amount", 0))
+			upi_count = row.get("count", 0)
+
+	return [
+		{"value": total_invoices, "label": "Total Invoices", "datatype": "Int", "indicator": "blue"},
+		{
+			"value": flt(total_amount, 2),
+			"label": "Total Sales (₹)",
+			"datatype": "Currency",
+			"indicator": "green",
+		},
+		{"value": flt(total_kg, 3), "label": "Total Quantity (Kg)", "datatype": "Float", "indicator": "blue"},
+		{
+			"value": flt(avg_invoice_value, 2),
+			"label": "Avg Invoice Value (₹)",
+			"datatype": "Currency",
+			"indicator": "orange",
+		},
+		{
+			"value": flt(avg_rate_per_kg, 2),
+			"label": "Avg Rate/Kg (₹)",
+			"datatype": "Currency",
+			"indicator": "purple",
+		},
+		{
+			"value": f"{cash_count} (₹{flt(cash_amount, 2)})",
+			"label": "Cash Sales",
+			"datatype": "Data",
+			"indicator": "green",
+		},
+		{
+			"value": f"{upi_count} (₹{flt(upi_amount, 2)})",
+			"label": "UPI Sales",
+			"datatype": "Data",
+			"indicator": "blue",
+		},
+	]
+
+
+def get_chart_data(data):
+	"""Generate chart showing shop-wise sales"""
+	if not data:
+		return None
+
+	# Group data by shop
+	shop_sales = {}
+	for row in data:
+		shop = str(row.get("shop", "Unknown"))
+		if shop not in shop_sales:
+			shop_sales[shop] = {"amount": 0, "kg": 0, "count": 0}
+		shop_sales[shop]["amount"] += flt(row.get("total_amount", 0))
+		shop_sales[shop]["kg"] += flt(row.get("total_kg", 0))
+		shop_sales[shop]["count"] += 1
+
+	# Sort by amount (descending)
+	sorted_shops = sorted(shop_sales.keys(), key=lambda x: shop_sales[x]["amount"], reverse=True)
+
+	# Prepare chart data
+	labels = []
+	amount_values = []
+	kg_values = []
+
+	for shop in sorted_shops:
+		labels.append(shop)
+		amount_values.append(flt(shop_sales[shop]["amount"], 2))
+		kg_values.append(flt(shop_sales[shop]["kg"], 2))
+
+	chart = {
+		"data": {
+			"labels": labels,
+			"datasets": [
+				{"name": "Sales Amount (₹)", "values": amount_values},
+				{"name": "Quantity Sold (Kg)", "values": kg_values},
+			],
+		},
+		"type": "bar",
+		"colors": ["#10b981", "#3b82f6"],
+		"height": 300,
+		"axisOptions": {"xIsSeries": 1},
+	}
+
+	return chart
