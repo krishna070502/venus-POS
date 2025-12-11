@@ -34,6 +34,20 @@ def get_columns():
 def get_data(filters):
 	conditions = ["docstatus = 1"]
 
+	# Check user roles for shop-based filtering
+	user_roles = frappe.get_roles(frappe.session.user)
+
+	# If user is Shop Manager but not System Manager, filter by their assigned shops
+	if "Shop Manager" in user_roles and "System Manager" not in user_roles:
+		# Get shops assigned to this user
+		user_shops = frappe.get_all("Shop", filters={"shop_manager": frappe.session.user}, pluck="name")
+		if user_shops:
+			shops_str = ", ".join([f"'{shop}'" for shop in user_shops])
+			conditions.append(f"shop IN ({shops_str})")
+		else:
+			# User has no assigned shops, return empty
+			return []
+
 	if filters.get("shop"):
 		conditions.append(f"shop = '{filters.get('shop')}'")
 
@@ -84,6 +98,17 @@ def get_summary(data, filters):
 	"""
 
 	conditions = []
+
+	# Check user roles for shop-based filtering
+	user_roles = frappe.get_roles(frappe.session.user)
+
+	# If user is Shop Manager but not System Manager, filter by their assigned shops
+	if "Shop Manager" in user_roles and "System Manager" not in user_roles:
+		user_shops = frappe.get_all("Shop", filters={"shop_manager": frappe.session.user}, pluck="name")
+		if user_shops:
+			shops_str = ", ".join([f"'{shop}'" for shop in user_shops])
+			conditions.append(f"shop IN ({shops_str})")
+
 	if filters and filters.get("shop"):
 		conditions.append(f"shop = '{filters.get('shop')}'")
 	if filters and filters.get("from_date"):

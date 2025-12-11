@@ -22,292 +22,538 @@ class POSBilling {
 	setup_page() {
 		this.payment_mode = 'Cash'; // Default payment mode
 		
-		// Add custom CSS for enterprise styling
+		// Hide Frappe navbar and page head for full-screen POS
+		$('header.navbar').hide();
+		$('.page-head').hide();
+		$('.container.page-body').css({'margin-top': '0', 'padding': '0'});
+		$('body').css('overflow', 'hidden');
+		
+		// Restore on page unload
+		$(window).on('beforeunload', function() {
+			$('header.navbar').show();
+			$('.page-head').show();
+		});
+		
+		// Add custom CSS for enterprise styling with responsive design
 		$('head').append(`
 			<style>
+				/* Base Styles */
 				.pos-container * { box-sizing: border-box; }
+				
+				/* Full Screen Mode */
+				body.pos-fullscreen .navbar,
+				body.pos-fullscreen .page-head,
+				body.pos-fullscreen .page-head-wrapper { display: none !important; }
+				body.pos-fullscreen { overflow: hidden !important; }
+				body.pos-fullscreen .container.page-body { margin-top: 0 !important; padding: 0 !important; }
+				body.pos-fullscreen .layout-main { padding: 0 !important; }
+				body.pos-fullscreen .frappe-control { margin: 0 !important; }
+				
+				/* Main Container */
+				.pos-container {
+					height: 100vh;
+					padding: 16px;
+					background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+					font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+					position: fixed;
+					top: 0;
+					left: 0;
+					right: 0;
+					bottom: 0;
+					z-index: 1000;
+				}
+				
+				/* Header Styles */
 				.pos-header { 
 					background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 					color: white;
-					padding: 20px 25px;
-					border-radius: 12px;
-					margin-bottom: 20px;
-					box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-				}
-				.pos-panel {
-					background: white;
-					border-radius: 12px;
-					box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+					padding: 16px 24px;
+					border-radius: 16px;
+					margin-bottom: 16px;
+					box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+					position: relative;
 					overflow: hidden;
 				}
+				.btn-exit-pos:hover {
+					background: rgba(255,255,255,0.35) !important;
+					transform: scale(1.05);
+				}
+				.pos-header::before {
+					content: '';
+					position: absolute;
+					top: -50%;
+					right: -50%;
+					width: 100%;
+					height: 200%;
+					background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+					pointer-events: none;
+				}
+				.pos-header h2 {
+					font-size: 1.5rem;
+					font-weight: 800;
+					letter-spacing: -0.5px;
+				}
+				
+				/* Panel Styles */
+				.pos-panel {
+					background: white;
+					border-radius: 16px;
+					box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+					border: 1px solid rgba(0,0,0,0.04);
+					overflow: hidden;
+				}
+				
+				/* Product Card Styles */
 				.product-card {
 					transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 					border: 2px solid #e8eaf6 !important;
+					cursor: pointer;
+					position: relative;
+					overflow: hidden;
+				}
+				.product-card::before {
+					content: '';
+					position: absolute;
+					top: 0;
+					left: 0;
+					right: 0;
+					height: 4px;
+					background: linear-gradient(90deg, #667eea, #764ba2);
+					transform: scaleX(0);
+					transition: transform 0.3s ease;
+				}
+				.product-card:hover::before {
+					transform: scaleX(1);
 				}
 				.product-card:hover {
-					transform: translateY(-4px);
-					box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15) !important;
+					transform: translateY(-6px);
+					box-shadow: 0 12px 40px rgba(102, 126, 234, 0.2) !important;
 					border-color: #667eea !important;
 				}
+				.product-card:active {
+					transform: translateY(-2px) scale(0.98);
+				}
+				
+				/* Cart Item Styles */
 				.cart-item {
 					transition: all 0.2s ease;
 					border-left: 4px solid transparent !important;
+					position: relative;
 				}
 				.cart-item:hover {
 					border-left-color: #667eea !important;
-					background: #f8f9fa !important;
+					background: linear-gradient(90deg, #f8f9ff 0%, white 100%) !important;
 				}
+				
+				/* Numpad Styles */
 				.numpad-btn {
 					transition: all 0.15s ease;
-					border: 2px solid #e0e0e0 !important;
+					border: 2px solid #e5e7eb !important;
 					background: white !important;
-					font-weight: 600 !important;
+					font-weight: 700 !important;
+					font-size: 1.25rem !important;
+					border-radius: 12px !important;
 				}
 				.numpad-btn:hover {
-					background: #667eea !important;
+					background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
 					color: white !important;
-					border-color: #667eea !important;
-					transform: scale(1.05);
+					border-color: transparent !important;
+					transform: scale(1.08);
+					box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
 				}
 				.numpad-btn:active {
 					transform: scale(0.95);
 				}
+				
+				/* Payment Mode Buttons */
 				.payment-mode-btn {
-					transition: all 0.2s ease;
+					transition: all 0.25s ease;
 					border: 2px solid transparent !important;
+					font-weight: 600 !important;
+					border-radius: 10px !important;
 				}
 				.payment-mode-btn.active {
-					box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-					transform: scale(1.02);
+					box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+					transform: scale(1.03);
 				}
+				
+				/* Checkout Button */
 				.checkout-btn {
 					background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
 					border: none !important;
 					transition: all 0.3s ease !important;
+					font-weight: 700 !important;
+					letter-spacing: 0.3px;
+					text-transform: uppercase;
+					font-size: 0.95rem !important;
 				}
 				.checkout-btn:hover:not(:disabled) {
-					transform: translateY(-2px);
-					box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4) !important;
+					transform: translateY(-3px);
+					box-shadow: 0 12px 28px rgba(102, 126, 234, 0.45) !important;
 				}
+				.checkout-btn:disabled {
+					opacity: 0.5;
+					background: #9ca3af !important;
+				}
+				
+				/* Quantity Controls */
 				.qty-controls .btn {
 					background: #f3f4f6 !important;
 					border: 2px solid #e5e7eb !important;
 					color: #667eea !important;
 					font-weight: 700 !important;
-					min-width: 36px !important;
+					width: 36px !important;
 					height: 36px !important;
-					border-radius: 8px !important;
+					border-radius: 10px !important;
 					transition: all 0.2s ease !important;
+					padding: 0 !important;
+					display: inline-flex !important;
+					align-items: center !important;
+					justify-content: center !important;
 				}
 				.qty-controls .btn:hover {
 					background: #667eea !important;
 					color: white !important;
 					border-color: #667eea !important;
-					transform: scale(1.1);
+					transform: scale(1.15);
 				}
-				.qty-controls .btn:active {
-					transform: scale(0.95);
-				}
+				
+				/* Cart Badge */
 				.cart-count {
 					background: linear-gradient(135deg, #f43f5e, #e11d48);
 					color: white;
-					padding: 4px 10px;
-					border-radius: 12px;
-					font-size: 12px;
+					padding: 4px 12px;
+					border-radius: 20px;
+					font-size: 13px;
 					font-weight: 700;
-					min-width: 24px;
+					min-width: 28px;
 					text-align: center;
+					box-shadow: 0 2px 8px rgba(244, 63, 94, 0.3);
 				}
-				#product-search {
+				
+				/* Search Box */
+				.search-box {
+					border: 2px solid #e8eaf6;
+					border-radius: 12px;
+					padding: 14px 18px;
+					font-size: 15px;
 					transition: all 0.3s ease;
+					background: #fafbfc;
 				}
-				#product-search:focus {
-					border-color: #667eea !important;
-					box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+				.search-box:focus {
+					border-color: #667eea;
+					box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
 					outline: none;
+					background: white;
 				}
+				
+				/* Stock Badges */
+				.badge-stock {
+					background: linear-gradient(135deg, #10b981, #059669);
+					color: white;
+					padding: 6px 14px;
+					border-radius: 20px;
+					font-size: 11px;
+					font-weight: 700;
+					letter-spacing: 0.3px;
+					box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+				}
+				.badge-out-stock {
+					background: linear-gradient(135deg, #ef4444, #dc2626);
+					color: white;
+					padding: 6px 14px;
+					border-radius: 20px;
+					font-size: 11px;
+					font-weight: 700;
+					box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+				}
+				
+				/* Remove Button */
 				.remove-item {
 					transition: all 0.2s ease !important;
+					border-radius: 8px !important;
 				}
 				.remove-item:hover {
 					transform: scale(1.1);
 					background: #dc2626 !important;
+					box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
 				}
-				.qty-controls button {
-					width: 32px;
-					height: 32px;
-					padding: 0 !important;
-					display: inline-flex;
-					align-items: center;
-					justify-content: center;
-					border-radius: 6px !important;
-					transition: all 0.2s ease;
+				
+				/* Scrollbar Styling */
+				.cart-items::-webkit-scrollbar,
+				.products-grid-wrapper::-webkit-scrollbar {
+					width: 6px;
 				}
-				.qty-controls button:hover {
-					background: #667eea !important;
-					color: white !important;
-					border-color: #667eea !important;
+				.cart-items::-webkit-scrollbar-track,
+				.products-grid-wrapper::-webkit-scrollbar-track {
+					background: #f1f1f1;
+					border-radius: 10px;
 				}
-				.search-box {
+				.cart-items::-webkit-scrollbar-thumb,
+				.products-grid-wrapper::-webkit-scrollbar-thumb {
+					background: linear-gradient(180deg, #667eea, #764ba2);
+					border-radius: 10px;
+				}
+				
+				/* Responsive Layout */
+				.pos-main-layout {
+					display: grid;
+					grid-template-columns: 300px 1fr 360px;
+					gap: 16px;
+					height: calc(100vh - 120px);
+				}
+				
+				/* Medium screens (tablets) */
+				@media (max-width: 1400px) {
+					.pos-main-layout {
+						grid-template-columns: 280px 1fr 340px;
+						gap: 12px;
+						height: calc(100vh - 110px);
+					}
+					.pos-header h2 { font-size: 1.3rem; }
+					.product-card { padding: 16px !important; }
+				}
+				
+				/* Small screens */
+				@media (max-width: 1200px) {
+					.pos-main-layout {
+						grid-template-columns: 260px 1fr 320px;
+						gap: 10px;
+						height: calc(100vh - 100px);
+					}
+					.pos-container { padding: 12px; }
+					.numpad-btn { padding: 14px !important; font-size: 1.1rem !important; }
+				}
+				
+				/* Extra small screens */
+				@media (max-width: 1024px) {
+					.pos-main-layout {
+						grid-template-columns: 1fr 1fr;
+						grid-template-rows: auto 1fr;
+						height: calc(100vh - 100px);
+					}
+					.numpad-panel { display: none !important; }
+					.cart-panel { grid-row: 1 / -1; }
+				}
+				
+				/* Animation Keyframes */
+				@keyframes slideIn {
+					from { opacity: 0; transform: translateY(10px); }
+					to { opacity: 1; transform: translateY(0); }
+				}
+				@keyframes pulse {
+					0%, 100% { transform: scale(1); }
+					50% { transform: scale(1.05); }
+				}
+				.cart-item {
+					animation: slideIn 0.3s ease;
+				}
+				
+				/* Total Amount Highlight */
+				.total-amount-display {
+					background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+					-webkit-background-clip: text;
+					-webkit-text-fill-color: transparent;
+					background-clip: text;
+				}
+				
+				/* Shop Selector */
+				#shop-select {
 					border: 2px solid #e8eaf6;
-					border-radius: 8px;
-					padding: 12px 16px;
-					font-size: 15px;
+					border-radius: 10px;
+					padding: 12px 14px;
+					font-size: 14px;
+					font-weight: 600;
 					transition: all 0.3s ease;
+					cursor: pointer;
+					background: white;
+					color: #1f2937;
+					-webkit-appearance: none;
+					-moz-appearance: none;
+					appearance: none;
+					background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23667eea' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+					background-repeat: no-repeat;
+					background-position: right 12px center;
+					padding-right: 36px;
 				}
-				.search-box:focus {
+				#shop-select option {
+					color: #1f2937;
+					background: white;
+					padding: 10px;
+					font-weight: 500;
+				}
+				#shop-select:focus {
 					border-color: #667eea;
 					box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 					outline: none;
 				}
-				.badge-stock {
-					background: #10b981;
-					color: white;
-					padding: 4px 12px;
-					border-radius: 12px;
-					font-size: 11px;
-					font-weight: 600;
+				
+				/* Summary Card */
+				.summary-card {
+					background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+					border-radius: 14px;
+					padding: 18px;
+					border: 1px solid #e2e8f0;
 				}
-				.badge-out-stock {
-					background: #ef4444;
-					color: white;
-					padding: 4px 12px;
+				
+				/* Change Display */
+				.change-display {
+					background: linear-gradient(135deg, #10b981 0%, #059669 100%);
 					border-radius: 12px;
-					font-size: 11px;
-					font-weight: 600;
+					padding: 16px;
+					color: white;
+					box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
 				}
 			</style>
 		`);
 		
 		// Create main layout with enterprise design
 		$(this.wrapper).find('.layout-main-section').html(`
-			<div class="pos-container" style="height: calc(100vh - 100px); padding: 20px; background: #f5f7fa;">
+			<div class="pos-container">
 				<!-- Header -->
 				<div class="pos-header">
-					<div style="display: flex; justify-content: space-between; align-items: center;">
-						<div>
-							<h2 style="margin: 0 0 5px 0; font-weight: 700;">🍗 POS Billing</h2>
-							<p style="margin: 0; opacity: 0.9; font-size: 14px;">Venus Chicken Management System</p>
-						</div>
-						<div style="text-align: right;">
-							<div style="font-size: 14px; opacity: 0.9;">
-								<i class="fa fa-user"></i> <span id="current-user">${frappe.session.user}</span>
+					<div style="display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 1;">
+						<div style="display: flex; align-items: center; gap: 16px;">
+							<button class="btn-exit-pos" onclick="frappe.set_route('/')" style="width: 44px; height: 44px; background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.3); border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s ease;" title="Exit POS">
+								<i class="fa fa-arrow-left" style="color: white; font-size: 18px;"></i>
+							</button>
+							<div style="width: 48px; height: 48px; background: rgba(255,255,255,0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+								🍗
 							</div>
-							<div style="font-size: 13px; opacity: 0.8; margin-top: 2px;">
-								<i class="fa fa-calendar"></i> <span id="current-date">${frappe.datetime.now_date()}</span>
+							<div>
+								<h2 style="margin: 0; font-weight: 800;">POS Billing</h2>
+								<p style="margin: 4px 0 0 0; opacity: 0.85; font-size: 13px; font-weight: 500;">Venus Chicken Management System</p>
+							</div>
+						</div>
+						<div style="display: flex; align-items: center; gap: 24px;">
+							<div style="text-align: right;">
+								<div style="font-size: 13px; opacity: 0.9; font-weight: 500;">
+									<i class="fa fa-user-circle" style="margin-right: 6px;"></i>${frappe.session.user_fullname || frappe.session.user}
+								</div>
+								<div style="font-size: 12px; opacity: 0.75; margin-top: 4px;">
+									<i class="fa fa-calendar" style="margin-right: 6px;"></i>${frappe.datetime.str_to_user(frappe.datetime.now_date())}
+								</div>
+							</div>
+							<div class="live-clock" style="width: 44px; height: 44px; background: rgba(255,255,255,0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;" title="Current Time">
+								<i class="fa fa-clock-o" style="font-size: 18px;"></i>
 							</div>
 						</div>
 					</div>
 				</div>
 
-				<div style="display: flex; gap: 20px; height: calc(100% - 110px);">
-					<!-- Left Panel - Numpad & Payment -->
-					<div class="pos-panel numpad-panel" style="flex: 0 0 320px; padding: 24px; display: flex; flex-direction: column;">
+				<!-- Main Grid Layout -->
+				<div class="pos-main-layout">
+					<!-- Left Panel - Payment & Numpad -->
+					<div class="pos-panel numpad-panel" style="padding: 20px; display: flex; flex-direction: column;">
 						<div class="shop-selector" style="margin-bottom: 20px;">
-							<label style="font-weight: 600; display: block; margin-bottom: 8px; color: #374151; font-size: 14px;">
-								<i class="fa fa-store"></i> Select Shop
+							<label style="font-weight: 700; display: flex; align-items: center; gap: 8px; margin-bottom: 10px; color: #374151; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">
+								<i class="fa fa-store" style="color: #667eea;"></i> Select Shop
 							</label>
-							<select class="form-control" id="shop-select" style="border-radius: 8px; padding: 10px; border: 2px solid #e8eaf6; font-size: 14px;">
+							<select class="form-control" id="shop-select">
 								<option value="">Choose a shop...</option>
 							</select>
 						</div>
 						
 						<div class="payment-mode-selector" style="margin-bottom: 20px; display: none;">
-							<label style="font-weight: 600; display: block; margin-bottom: 8px; color: #374151; font-size: 14px;">
-								<i class="fa fa-credit-card"></i> Payment Mode
+							<label style="font-weight: 700; display: flex; align-items: center; gap: 8px; margin-bottom: 10px; color: #374151; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">
+								<i class="fa fa-credit-card" style="color: #667eea;"></i> Payment Mode
 							</label>
-							<div style="display: flex; gap: 10px;">
-								<button class="btn btn-success payment-mode-btn active" data-mode="Cash" style="flex: 1; padding: 12px; font-weight: 600; border-radius: 8px; font-size: 13px;">
-									<i class="fa fa-money"></i> Cash
+							<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+								<button class="btn btn-success payment-mode-btn active" data-mode="Cash" style="padding: 14px 12px; font-size: 13px;">
+									<i class="fa fa-money" style="margin-right: 6px;"></i>Cash
 								</button>
-								<button class="btn btn-info payment-mode-btn" data-mode="UPI" style="flex: 1; padding: 12px; font-weight: 600; border-radius: 8px; font-size: 13px;">
-									<i class="fa fa-mobile"></i> UPI
+								<button class="btn btn-info payment-mode-btn" data-mode="UPI" style="padding: 14px 12px; font-size: 13px;">
+									<i class="fa fa-mobile" style="margin-right: 6px;"></i>UPI
 								</button>
 							</div>
 						</div>
 						
 						<div class="payment-input-section" style="display: none; flex: 1; display: flex; flex-direction: column;">
 							<div style="margin-bottom: 16px;">
-								<label style="font-weight: 600; display: block; margin-bottom: 8px; color: #374151; font-size: 14px;">
-									Amount Received
+								<label style="font-weight: 700; display: flex; align-items: center; gap: 8px; margin-bottom: 10px; color: #374151; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">
+									<i class="fa fa-inr" style="color: #667eea;"></i> Amount Received
 								</label>
 								<input type="text" class="form-control payment-amount-input" placeholder="₹ 0.00" 
-									style="font-size: 32px; padding: 16px; text-align: right; font-weight: 700; background: #f9fafb; border: 2px solid #e8eaf6; border-radius: 8px; color: #667eea;" readonly>
+									style="font-size: 28px; padding: 14px; text-align: right; font-weight: 800; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border: 2px solid #e8eaf6; border-radius: 12px; color: #667eea;" readonly>
 							</div>
 							
 							<!-- Numpad -->
-							<div class="numpad" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px;">
-								<button class="btn numpad-btn" data-value="7" style="padding: 18px; font-size: 22px; border-radius: 8px;">7</button>
-								<button class="btn numpad-btn" data-value="8" style="padding: 18px; font-size: 22px; border-radius: 8px;">8</button>
-								<button class="btn numpad-btn" data-value="9" style="padding: 18px; font-size: 22px; border-radius: 8px;">9</button>
-								<button class="btn numpad-btn" data-value="4" style="padding: 18px; font-size: 22px; border-radius: 8px;">4</button>
-								<button class="btn numpad-btn" data-value="5" style="padding: 18px; font-size: 22px; border-radius: 8px;">5</button>
-								<button class="btn numpad-btn" data-value="6" style="padding: 18px; font-size: 22px; border-radius: 8px;">6</button>
-								<button class="btn numpad-btn" data-value="1" style="padding: 18px; font-size: 22px; border-radius: 8px;">1</button>
-								<button class="btn numpad-btn" data-value="2" style="padding: 18px; font-size: 22px; border-radius: 8px;">2</button>
-								<button class="btn numpad-btn" data-value="3" style="padding: 18px; font-size: 22px; border-radius: 8px;">3</button>
-								<button class="btn numpad-btn" data-value="0" style="padding: 18px; font-size: 22px; border-radius: 8px;">0</button>
-								<button class="btn numpad-btn" data-value="00" style="padding: 18px; font-size: 20px; border-radius: 8px;">00</button>
-								<button class="btn btn-warning numpad-clear" style="padding: 18px; font-size: 20px; border-radius: 8px; font-weight: 600;">
+							<div class="numpad" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; flex: 1;">
+								<button class="btn numpad-btn" data-value="7" style="padding: 16px;">7</button>
+								<button class="btn numpad-btn" data-value="8" style="padding: 16px;">8</button>
+								<button class="btn numpad-btn" data-value="9" style="padding: 16px;">9</button>
+								<button class="btn numpad-btn" data-value="4" style="padding: 16px;">4</button>
+								<button class="btn numpad-btn" data-value="5" style="padding: 16px;">5</button>
+								<button class="btn numpad-btn" data-value="6" style="padding: 16px;">6</button>
+								<button class="btn numpad-btn" data-value="1" style="padding: 16px;">1</button>
+								<button class="btn numpad-btn" data-value="2" style="padding: 16px;">2</button>
+								<button class="btn numpad-btn" data-value="3" style="padding: 16px;">3</button>
+								<button class="btn numpad-btn" data-value="0" style="padding: 16px;">0</button>
+								<button class="btn numpad-btn" data-value="00" style="padding: 16px; font-size: 1rem !important;">00</button>
+								<button class="btn btn-warning numpad-clear" style="padding: 16px; border-radius: 12px !important; font-weight: 700;">
 									<i class="fa fa-backspace"></i>
 								</button>
 							</div>
 							
-							<div class="change-display" style="padding: 16px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 10px; margin-bottom: 16px; display: none; color: white;">
-								<div style="display: flex; justify-content: space-between; font-size: 18px;">
-									<span style="font-weight: 600;"><i class="fa fa-exchange"></i> Change</span>
-									<span class="change-amount" style="font-weight: 700; font-size: 22px;">₹0.00</span>
+							<div class="change-display" style="margin-top: 16px; display: none;">
+								<div style="display: flex; justify-content: space-between; align-items: center;">
+									<span style="font-weight: 600; font-size: 14px;"><i class="fa fa-exchange" style="margin-right: 8px;"></i>Change to Return</span>
+									<span class="change-amount" style="font-weight: 800; font-size: 24px;">₹0.00</span>
 								</div>
 							</div>
 						</div>
 					</div>
 
 					<!-- Middle Panel - Products -->
-					<div class="pos-panel products-panel" style="flex: 2; padding: 24px; display: flex; flex-direction: column;">
-						<div style="margin-bottom: 20px;">
-							<input type="text" class="form-control search-box" id="product-search" placeholder="🔍 Search products...">
+					<div class="pos-panel products-panel" style="padding: 20px; display: flex; flex-direction: column; min-width: 0;">
+						<div style="margin-bottom: 16px;">
+							<input type="text" class="form-control search-box" id="product-search" placeholder="🔍 Search products by name...">
 						</div>
-						<div style="flex: 1; overflow-y: auto; padding-right: 8px;">
-							<div class="products-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px;">
+						<div class="products-grid-wrapper" style="flex: 1; overflow-y: auto; padding-right: 6px;">
+							<div class="products-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px;">
 								<!-- Products will be loaded here -->
 							</div>
 						</div>
 					</div>
 
 					<!-- Right Panel - Cart -->
-					<div class="pos-panel cart-panel" style="flex: 0 0 380px; padding: 24px; display: flex; flex-direction: column;">
-						<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-							<h3 style="margin: 0; font-weight: 700; color: #1f2937; font-size: 20px;">
-								<i class="fa fa-shopping-cart"></i> Cart
+					<div class="pos-panel cart-panel" style="padding: 20px; display: flex; flex-direction: column;">
+						<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 2px solid #f1f5f9;">
+							<h3 style="margin: 0; font-weight: 800; color: #1f2937; font-size: 18px; display: flex; align-items: center; gap: 10px;">
+								<span style="width: 36px; height: 36px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+									<i class="fa fa-shopping-cart" style="color: white; font-size: 14px;"></i>
+								</span>
+								Shopping Cart
 							</h3>
-							<span class="badge badge-primary" style="font-size: 14px; padding: 6px 12px; border-radius: 12px;">
-								<span class="cart-count">0</span> items
-							</span>
+							<span class="cart-count">0</span>
 						</div>
-						<div class="cart-items" style="flex: 1; overflow-y: auto; margin-bottom: 20px; padding-right: 8px;">
-							<div class="empty-cart" style="text-align: center; padding: 60px 20px; color: #9ca3af;">
-								<div style="font-size: 64px; margin-bottom: 16px; opacity: 0.5;">🛒</div>
-								<p style="font-size: 16px; margin: 0;">Your cart is empty</p>
-								<p style="font-size: 13px; margin-top: 8px; opacity: 0.7;">Add products to get started</p>
+						
+						<div class="cart-items" style="flex: 1; overflow-y: auto; margin-bottom: 16px;">
+							<div class="empty-cart" style="text-align: center; padding: 50px 20px; color: #9ca3af;">
+								<div style="width: 80px; height: 80px; background: #f3f4f6; border-radius: 50%; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center;">
+									<span style="font-size: 36px; opacity: 0.5;">🛒</span>
+								</div>
+								<p style="font-size: 15px; margin: 0; font-weight: 600; color: #6b7280;">Your cart is empty</p>
+								<p style="font-size: 13px; margin-top: 6px; opacity: 0.7;">Click on products to add them</p>
 							</div>
 						</div>
 						
-						<div class="cart-summary" style="border-top: 3px solid #e5e7eb; padding-top: 20px;">
-							<div style="background: #f9fafb; padding: 16px; border-radius: 10px; margin-bottom: 16px;">
-								<div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; color: #6b7280;">
+						<div class="cart-summary">
+							<div class="summary-card" style="margin-bottom: 14px;">
+								<div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; color: #64748b;">
 									<span>Subtotal</span>
-									<span class="subtotal-amount">₹0.00</span>
+									<span class="subtotal-amount" style="font-weight: 600;">₹0.00</span>
 								</div>
-								<div style="display: flex; justify-content: space-between; padding-top: 12px; border-top: 2px dashed #e5e7eb; font-size: 22px; font-weight: 700; color: #1f2937;">
-									<span>Total</span>
-									<span class="total-amount" style="color: #667eea;">₹0.00</span>
+								<div style="display: flex; justify-content: space-between; padding-top: 12px; border-top: 2px dashed #e2e8f0;">
+									<span style="font-size: 16px; font-weight: 700; color: #1e293b;">Total Amount</span>
+									<span class="total-amount total-amount-display" style="font-size: 24px; font-weight: 800;">₹0.00</span>
 								</div>
 							</div>
-							<button class="btn btn-primary btn-lg btn-block checkout-btn" disabled style="padding: 16px; font-size: 17px; font-weight: 600; border-radius: 10px; margin-bottom: 10px;">
-								<i class="fa fa-check-circle"></i> Complete Checkout
+							<button class="btn btn-primary btn-lg btn-block checkout-btn" disabled style="padding: 16px; border-radius: 12px; margin-bottom: 10px;">
+								<i class="fa fa-check-circle" style="margin-right: 8px;"></i>COMPLETE CHECKOUT
 							</button>
-							<button class="btn btn-outline-danger btn-block clear-cart-btn" disabled style="padding: 12px; font-weight: 600; border-radius: 8px; border-width: 2px;">
-								<i class="fa fa-trash-o"></i> Clear Cart
+							<button class="btn btn-outline-secondary btn-block clear-cart-btn" disabled style="padding: 12px; font-weight: 600; border-radius: 10px; border-width: 2px; color: #64748b;">
+								<i class="fa fa-trash-o" style="margin-right: 6px;"></i>Clear Cart
 							</button>
 						</div>
 					</div>
@@ -391,7 +637,7 @@ class POSBilling {
 
 			if (available) {
 				card.click(() => {
-					this.add_to_cart(product);
+					this.show_add_to_cart_dialog(product);
 					// Visual feedback
 					card.css('transform', 'scale(0.95)');
 					setTimeout(() => card.css('transform', ''), 150);
@@ -399,6 +645,254 @@ class POSBilling {
 			}
 
 			grid.append(card);
+		});
+	}
+
+	show_add_to_cart_dialog(product) {
+		const rate_per_kg = product.rate_per_kg || 0;
+		const available_stock = product.processed_weight_kg || 0;
+		
+		// Create dialog for selecting sale mode
+		const dialog = new frappe.ui.Dialog({
+			title: `Add ${product.product_name || product.product}`,
+			fields: [
+				{
+					fieldtype: 'HTML',
+					fieldname: 'product_info',
+					options: `
+						<div style="text-align: center; padding: 10px 0 20px 0; border-bottom: 2px dashed #e5e7eb; margin-bottom: 20px;">
+							<div style="font-size: 48px; margin-bottom: 8px;">🍗</div>
+							<div style="font-size: 18px; font-weight: 700; color: #1f2937;">${product.product_name || product.product}</div>
+							<div style="color: #667eea; font-weight: 600; margin-top: 4px;">₹${rate_per_kg} /kg</div>
+							<div style="color: #6b7280; font-size: 13px; margin-top: 4px;">Available: ${available_stock.toFixed(2)} kg</div>
+						</div>
+					`
+				},
+				{
+					fieldtype: 'HTML',
+					fieldname: 'mode_selector',
+					options: `
+						<div style="margin-bottom: 20px;">
+							<label style="font-weight: 600; display: block; margin-bottom: 12px; color: #374151;">Select Entry Mode</label>
+							<div style="display: flex; gap: 10px;">
+								<button class="btn btn-default sale-mode-btn active" data-mode="weight" style="flex: 1; padding: 14px; font-weight: 600; border-radius: 8px; border: 2px solid #667eea; background: #667eea; color: white;">
+									<i class="fa fa-balance-scale"></i> By Weight (Kg)
+								</button>
+								<button class="btn btn-default sale-mode-btn" data-mode="amount" style="flex: 1; padding: 14px; font-weight: 600; border-radius: 8px; border: 2px solid #e5e7eb;">
+									<i class="fa fa-inr"></i> By Amount (₹)
+								</button>
+							</div>
+						</div>
+					`
+				},
+				{
+					fieldtype: 'HTML',
+					fieldname: 'input_section',
+					options: `
+						<div class="weight-input-section">
+							<label style="font-weight: 600; display: block; margin-bottom: 8px; color: #374151;">Enter Weight (Kg)</label>
+							<input type="text" id="weight-input" class="form-control" value="0.5"
+								style="font-size: 24px; padding: 12px; text-align: center; font-weight: 700; border: 2px solid #e8eaf6; border-radius: 8px;">
+							<div style="margin-top: 12px; padding: 12px; background: #f0fdf4; border-radius: 8px; text-align: center;">
+								<span style="color: #6b7280;">Amount:</span>
+								<span id="calculated-amount" style="font-weight: 700; color: #10b981; font-size: 18px; margin-left: 8px;">₹${(0.5 * rate_per_kg).toFixed(2)}</span>
+							</div>
+						</div>
+						<div class="amount-input-section" style="display: none;">
+							<label style="font-weight: 600; display: block; margin-bottom: 8px; color: #374151;">Enter Amount (₹)</label>
+							<input type="text" id="amount-input" class="form-control" value="100"
+								style="font-size: 24px; padding: 12px; text-align: center; font-weight: 700; border: 2px solid #e8eaf6; border-radius: 8px;">
+							<div style="margin-top: 12px; padding: 12px; background: #eff6ff; border-radius: 8px; text-align: center;">
+								<span style="color: #6b7280;">Weight:</span>
+								<span id="calculated-weight" style="font-weight: 700; color: #3b82f6; font-size: 18px; margin-left: 8px;">${(100 / rate_per_kg).toFixed(3)} kg</span>
+							</div>
+						</div>
+					`
+				},
+				{
+					fieldtype: 'HTML',
+					fieldname: 'numpad_section',
+					options: `
+						<div style="margin-top: 16px;">
+							<div class="quick-numpad" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
+								<button class="btn btn-default quick-num" data-value="1" style="padding: 12px; font-size: 18px; font-weight: 600; border-radius: 6px;">1</button>
+								<button class="btn btn-default quick-num" data-value="2" style="padding: 12px; font-size: 18px; font-weight: 600; border-radius: 6px;">2</button>
+								<button class="btn btn-default quick-num" data-value="3" style="padding: 12px; font-size: 18px; font-weight: 600; border-radius: 6px;">3</button>
+								<button class="btn btn-default quick-num" data-value="0.5" style="padding: 12px; font-size: 14px; font-weight: 600; border-radius: 6px; background: #f0fdf4; color: #10b981;">+0.5</button>
+								<button class="btn btn-default quick-num" data-value="4" style="padding: 12px; font-size: 18px; font-weight: 600; border-radius: 6px;">4</button>
+								<button class="btn btn-default quick-num" data-value="5" style="padding: 12px; font-size: 18px; font-weight: 600; border-radius: 6px;">5</button>
+								<button class="btn btn-default quick-num" data-value="6" style="padding: 12px; font-size: 18px; font-weight: 600; border-radius: 6px;">6</button>
+								<button class="btn btn-default quick-num" data-value="100" style="padding: 12px; font-size: 14px; font-weight: 600; border-radius: 6px; background: #eff6ff; color: #3b82f6;">+100</button>
+								<button class="btn btn-default quick-num" data-value="7" style="padding: 12px; font-size: 18px; font-weight: 600; border-radius: 6px;">7</button>
+								<button class="btn btn-default quick-num" data-value="8" style="padding: 12px; font-size: 18px; font-weight: 600; border-radius: 6px;">8</button>
+								<button class="btn btn-default quick-num" data-value="9" style="padding: 12px; font-size: 18px; font-weight: 600; border-radius: 6px;">9</button>
+								<button class="btn btn-default quick-num" data-value="50" style="padding: 12px; font-size: 14px; font-weight: 600; border-radius: 6px; background: #eff6ff; color: #3b82f6;">+50</button>
+								<button class="btn btn-default quick-num" data-value="." style="padding: 12px; font-size: 18px; font-weight: 600; border-radius: 6px;">.</button>
+								<button class="btn btn-default quick-num" data-value="0" style="padding: 12px; font-size: 18px; font-weight: 600; border-radius: 6px;">0</button>
+								<button class="btn btn-warning quick-clear" style="padding: 12px; font-size: 16px; font-weight: 600; border-radius: 6px;"><i class="fa fa-backspace"></i></button>
+								<button class="btn btn-default quick-num" data-value="200" style="padding: 12px; font-size: 14px; font-weight: 600; border-radius: 6px; background: #eff6ff; color: #3b82f6;">+200</button>
+							</div>
+						</div>
+					`
+				}
+			],
+			primary_action_label: 'Add to Cart',
+			primary_action: () => {
+				const mode = dialog.$wrapper.find('.sale-mode-btn.active').data('mode');
+				let qty_kg;
+				
+				if (mode === 'weight') {
+					qty_kg = parseFloat(dialog.$wrapper.find('#weight-input').val()) || 0.5;
+				} else {
+					const amount = parseFloat(dialog.$wrapper.find('#amount-input').val()) || 100;
+					qty_kg = amount / rate_per_kg;
+				}
+				
+				// Validate against available stock
+				if (qty_kg > available_stock) {
+					frappe.msgprint(`Not enough stock! Available: ${available_stock.toFixed(2)} kg`);
+					return;
+				}
+				
+				if (qty_kg <= 0) {
+					frappe.msgprint('Please enter a valid quantity');
+					return;
+				}
+				
+				// Round to 3 decimal places
+				qty_kg = Math.round(qty_kg * 1000) / 1000;
+				
+				this.add_to_cart_with_qty(product, qty_kg);
+				dialog.hide();
+			}
+		});
+		
+		dialog.show();
+		
+		// Set up mode switching
+		let current_mode = 'weight';
+		dialog.$wrapper.find('.sale-mode-btn').click(function() {
+			dialog.$wrapper.find('.sale-mode-btn').removeClass('active').css({
+				'background': 'white',
+				'color': '#374151',
+				'border-color': '#e5e7eb'
+			});
+			$(this).addClass('active').css({
+				'background': '#667eea',
+				'color': 'white',
+				'border-color': '#667eea'
+			});
+			
+			current_mode = $(this).data('mode');
+			if (current_mode === 'weight') {
+				dialog.$wrapper.find('.weight-input-section').show();
+				dialog.$wrapper.find('.amount-input-section').hide();
+				dialog.$wrapper.find('#weight-input').focus().select();
+			} else {
+				dialog.$wrapper.find('.weight-input-section').hide();
+				dialog.$wrapper.find('.amount-input-section').show();
+				dialog.$wrapper.find('#amount-input').focus().select();
+			}
+		});
+		
+		// Weight input change - calculate amount
+		dialog.$wrapper.find('#weight-input').on('input', function() {
+			const weight = parseFloat($(this).val()) || 0;
+			const amount = weight * rate_per_kg;
+			dialog.$wrapper.find('#calculated-amount').text(`₹${amount.toFixed(2)}`);
+		});
+		
+		// Amount input change - calculate weight
+		dialog.$wrapper.find('#amount-input').on('input', function() {
+			const amount = parseFloat($(this).val()) || 0;
+			const weight = rate_per_kg > 0 ? amount / rate_per_kg : 0;
+			dialog.$wrapper.find('#calculated-weight').text(`${weight.toFixed(3)} kg`);
+		});
+		
+		// Quick numpad buttons
+		dialog.$wrapper.find('.quick-num').click(function() {
+			const value = $(this).data('value').toString();
+			const input_selector = current_mode === 'weight' ? '#weight-input' : '#amount-input';
+			const input = dialog.$wrapper.find(input_selector);
+			let current = input.val() || '';
+			
+			// Check if it's a quick add button (+0.5, +50, +100, +200)
+			if (value === '0.5' || value === '50' || value === '100' || value === '200') {
+				const currentNum = parseFloat(current) || 0;
+				input.val((currentNum + parseFloat(value)).toString());
+			} else if (value === '.') {
+				// Handle dot - only add if no dot exists
+				if (!current.includes('.')) {
+					if (current === '' || current === '0') {
+						input.val('0.');
+					} else {
+						input.val(current + '.');
+					}
+				}
+			} else {
+				// Regular number input (0-9)
+				if (current === '0' || current === '0.5' || current === '100') {
+					// Replace default values when user starts typing
+					current = '';
+				}
+				input.val(current + value);
+			}
+			input.trigger('input');
+		});
+		
+		// Clear button
+		dialog.$wrapper.find('.quick-clear').click(function() {
+			const input_selector = current_mode === 'weight' ? '#weight-input' : '#amount-input';
+			const input = dialog.$wrapper.find(input_selector);
+			let current = input.val() || '';
+			input.val(current.slice(0, -1) || '0');
+			input.trigger('input');
+		});
+		
+		// Focus on weight input initially
+		setTimeout(() => {
+			dialog.$wrapper.find('#weight-input').focus().select();
+		}, 100);
+		
+		// Style the primary button
+		dialog.$wrapper.find('.btn-primary').css({
+			'background': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+			'border': 'none',
+			'padding': '12px 24px',
+			'font-weight': '600'
+		});
+	}
+
+	add_to_cart_with_qty(product, qty_kg) {
+		// Check if already in cart
+		const existing = this.cart_items.find(item => item.product === product.product);
+		
+		if (existing) {
+			// Add to existing quantity
+			existing.qty_kg += qty_kg;
+			// Ensure doesn't exceed stock
+			if (existing.qty_kg > existing.available_stock) {
+				existing.qty_kg = existing.available_stock;
+				frappe.show_alert({
+					message: 'Quantity limited to available stock',
+					indicator: 'orange'
+				});
+			}
+		} else {
+			// Add new item
+			this.cart_items.push({
+				product: product.product,
+				product_name: product.product_name || product.product,
+				rate_per_kg: product.rate_per_kg || 0,
+				qty_kg: qty_kg,
+				available_stock: product.processed_weight_kg || 0
+			});
+		}
+		
+		this.render_cart();
+		frappe.show_alert({
+			message: `Added ${qty_kg.toFixed(3)} kg to cart`,
+			indicator: 'green'
 		});
 	}
 
