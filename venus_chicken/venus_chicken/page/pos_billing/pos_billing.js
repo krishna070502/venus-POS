@@ -340,8 +340,9 @@ class POSBilling {
 						height: calc(100vh - 70px);
 					}
 					.pos-panel { padding: 12px !important; border-radius: 10px !important; }
-					.numpad-btn { padding: 10px !important; font-size: 0.95rem !important; border-radius: 8px !important; }
-					.numpad { gap: 6px !important; }
+					.numpad-panel { overflow: visible !important; }
+					.numpad-btn { padding: 8px !important; font-size: 0.9rem !important; border-radius: 8px !important; }
+					.numpad { gap: 5px !important; flex: 0 0 auto !important; }
 					.product-card { padding: 10px !important; border-radius: 10px !important; }
 					.product-card > div:first-child { font-size: 36px !important; margin-bottom: 6px !important; }
 					.product-card h5 { font-size: 12px !important; margin-bottom: 4px !important; }
@@ -350,11 +351,16 @@ class POSBilling {
 					.summary-card { padding: 12px !important; margin-bottom: 10px !important; }
 					.checkout-btn { padding: 12px !important; font-size: 0.85rem !important; }
 					.clear-cart-btn { padding: 10px !important; }
-					.payment-amount-input { font-size: 22px !important; padding: 10px !important; }
-					.shop-selector, .payment-mode-selector { margin-bottom: 12px !important; }
-					.payment-mode-btn { padding: 10px 8px !important; font-size: 12px !important; }
-					.change-display { padding: 10px !important; margin-top: 10px !important; }
+					.payment-amount-input { font-size: 20px !important; padding: 8px !important; }
+					.payment-input-section > div:first-child { margin-bottom: 10px !important; }
+					.payment-input-section > div:first-child label { margin-bottom: 6px !important; font-size: 11px !important; }
+					.shop-selector, .payment-mode-selector { margin-bottom: 10px !important; }
+					.shop-selector label, .payment-mode-selector label { margin-bottom: 6px !important; font-size: 11px !important; }
+					.payment-mode-btn { padding: 8px 6px !important; font-size: 11px !important; }
+					#shop-select { padding: 8px 10px !important; font-size: 12px !important; }
+					.change-display { padding: 10px !important; margin-top: 8px !important; flex-shrink: 0 !important; }
 					.change-display .change-amount { font-size: 18px !important; }
+					.change-display span:first-child { font-size: 12px !important; }
 				}
 				
 				/* Tablet portrait (768px - 900px) */
@@ -363,31 +369,41 @@ class POSBilling {
 					.pos-header { padding: 8px 12px; margin-bottom: 6px; }
 					.pos-header h2 { font-size: 1rem; }
 					.pos-main-layout {
-						grid-template-columns: 200px 1fr 240px;
+						grid-template-columns: 180px 1fr 220px;
 						gap: 6px;
-						height: calc(100vh - 60px);
+						height: calc(100vh - 56px);
 					}
-					.pos-panel { padding: 10px !important; }
-					.numpad-btn { padding: 8px !important; font-size: 0.9rem !important; }
-					.numpad { gap: 4px !important; }
+					.pos-panel { padding: 8px !important; }
+					.numpad-panel { overflow: visible !important; }
+					.numpad-btn { padding: 6px !important; font-size: 0.85rem !important; }
+					.numpad { gap: 4px !important; flex: 0 0 auto !important; }
 					.product-card { padding: 8px !important; }
-					.product-card > div:first-child { font-size: 28px !important; margin-bottom: 4px !important; }
-					.product-card h5 { font-size: 11px !important; line-height: 1.2 !important; }
-					.product-card .badge-stock, .product-card .badge-out-stock { font-size: 9px !important; padding: 4px 8px !important; }
-					.products-grid { gap: 6px !important; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)) !important; }
-					.cart-items { margin-bottom: 8px !important; }
-					.cart-item { padding: 8px !important; }
-					.summary-card { padding: 10px !important; margin-bottom: 8px !important; }
-					.checkout-btn { padding: 10px !important; font-size: 0.8rem !important; margin-bottom: 6px !important; }
-					.clear-cart-btn { padding: 8px !important; font-size: 12px !important; }
-					.payment-amount-input { font-size: 18px !important; padding: 8px !important; }
-					.shop-selector, .payment-mode-selector { margin-bottom: 10px !important; }
-					.payment-mode-btn { padding: 8px 6px !important; font-size: 11px !important; }
-					#shop-select { padding: 8px 10px !important; font-size: 12px !important; }
-					.btn-exit-pos { width: 36px !important; height: 36px !important; }
-					.change-display { padding: 8px !important; margin-top: 8px !important; }
-					.change-display .change-amount { font-size: 16px !important; }
-					.search-box { padding: 10px 12px !important; font-size: 13px !important; }
+					.product-card > div:first-child { font-size: 24px !important; margin-bottom: 4px !important; }
+					.product-card h5 { font-size: 10px !important; line-height: 1.2 !important; }
+					.product-card .badge-stock, .product-card .badge-out-stock { font-size: 8px !important; padding: 3px 6px !important; }
+					.products-grid { gap: 6px !important; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)) !important; }
+					.cart-items { margin-bottom: 6px !important; }
+					.cart-item { padding: 6px !important; }
+					.summary-card { padding: 8px !important; margin-bottom: 6px !important; }
+					.checkout-btn { padding: 10px !important; font-size: 0.75rem !important; margin-bottom: 4px !important; }
+					.clear-cart-btn { padding: 6px !important; font-size: 11px !important; }
+					.payment-amount-input { font-size: 16px !important; padding: 6px !important; }
+					.payment-input-section > div:first-child { margin-bottom: 8px !important; }
+					.payment-input-section > div:first-child label { margin-bottom: 4px !important; font-size: 10px !important; }
+					.shop-selector, .payment-mode-selector { margin-bottom: 8px !important; }
+					.shop-selector label, .payment-mode-selector label { margin-bottom: 4px !important; font-size: 10px !important; }
+					.payment-mode-btn { padding: 6px 4px !important; font-size: 10px !important; }
+					#shop-select { padding: 6px 8px !important; font-size: 11px !important; }
+					.btn-exit-pos { width: 32px !important; height: 32px !important; }
+					.change-display { padding: 8px !important; margin-top: 6px !important; flex-shrink: 0 !important; }
+					.change-display .change-amount { font-size: 14px !important; }
+					.change-display span:first-child { font-size: 10px !important; }
+					.search-box { padding: 8px 10px !important; font-size: 12px !important; }
+					.cart-count { padding: 3px 8px !important; font-size: 11px !important; }
+					.cart-panel h3 { font-size: 14px !important; }
+					.cart-panel h3 span:first-child { width: 28px !important; height: 28px !important; }
+					.cart-panel h3 span:first-child i { font-size: 12px !important; }
+					.total-amount { font-size: 18px !important; }
 				}
 				
 				/* Small tablet / Large phone (below 768px) - 2 column layout */
@@ -540,9 +556,9 @@ class POSBilling {
 				<!-- Main Grid Layout -->
 				<div class="pos-main-layout">
 					<!-- Left Panel - Payment & Numpad -->
-					<div class="pos-panel numpad-panel" style="padding: 20px; display: flex; flex-direction: column;">
-						<div class="shop-selector" style="margin-bottom: 20px;">
-							<label style="font-weight: 700; display: flex; align-items: center; gap: 8px; margin-bottom: 10px; color: #374151; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">
+					<div class="pos-panel numpad-panel" style="padding: 16px; display: flex; flex-direction: column; overflow: hidden;">
+						<div class="shop-selector" style="margin-bottom: 14px; flex-shrink: 0;">
+							<label style="font-weight: 700; display: flex; align-items: center; gap: 8px; margin-bottom: 8px; color: #374151; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">
 								<i class="fa fa-store" style="color: #667eea;"></i> Select Shop
 							</label>
 							<select class="form-control" id="shop-select">
@@ -550,51 +566,51 @@ class POSBilling {
 							</select>
 						</div>
 						
-						<div class="payment-mode-selector" style="margin-bottom: 20px; display: none;">
-							<label style="font-weight: 700; display: flex; align-items: center; gap: 8px; margin-bottom: 10px; color: #374151; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">
+						<div class="payment-mode-selector" style="margin-bottom: 14px; display: none; flex-shrink: 0;">
+							<label style="font-weight: 700; display: flex; align-items: center; gap: 8px; margin-bottom: 8px; color: #374151; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">
 								<i class="fa fa-credit-card" style="color: #667eea;"></i> Payment Mode
 							</label>
-							<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-								<button class="btn btn-success payment-mode-btn active" data-mode="Cash" style="padding: 14px 12px; font-size: 13px;">
-									<i class="fa fa-money" style="margin-right: 6px;"></i>Cash
+							<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+								<button class="btn btn-success payment-mode-btn active" data-mode="Cash" style="padding: 12px 10px; font-size: 12px;">
+									<i class="fa fa-money" style="margin-right: 4px;"></i>Cash
 								</button>
-								<button class="btn btn-info payment-mode-btn" data-mode="UPI" style="padding: 14px 12px; font-size: 13px;">
-									<i class="fa fa-mobile" style="margin-right: 6px;"></i>UPI
+								<button class="btn btn-info payment-mode-btn" data-mode="UPI" style="padding: 12px 10px; font-size: 12px;">
+									<i class="fa fa-mobile" style="margin-right: 4px;"></i>UPI
 								</button>
 							</div>
 						</div>
 						
-						<div class="payment-input-section" style="display: none; flex: 1; display: flex; flex-direction: column;">
-							<div style="margin-bottom: 16px;">
-								<label style="font-weight: 700; display: flex; align-items: center; gap: 8px; margin-bottom: 10px; color: #374151; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">
+						<div class="payment-input-section" style="display: none; flex: 1; display: flex; flex-direction: column; overflow: hidden;">
+							<div style="margin-bottom: 12px; flex-shrink: 0;">
+								<label style="font-weight: 700; display: flex; align-items: center; gap: 8px; margin-bottom: 8px; color: #374151; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">
 									<i class="fa fa-inr" style="color: #667eea;"></i> Amount Received
 								</label>
 								<input type="text" class="form-control payment-amount-input" placeholder="₹ 0.00" 
-									style="font-size: 28px; padding: 14px; text-align: right; font-weight: 800; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border: 2px solid #e8eaf6; border-radius: 12px; color: #667eea;" readonly>
+									style="font-size: 24px; padding: 12px; text-align: right; font-weight: 800; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border: 2px solid #e8eaf6; border-radius: 12px; color: #667eea;" readonly>
 							</div>
 							
 							<!-- Numpad -->
-							<div class="numpad" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; flex: 1;">
-								<button class="btn numpad-btn" data-value="7" style="padding: 16px;">7</button>
-								<button class="btn numpad-btn" data-value="8" style="padding: 16px;">8</button>
-								<button class="btn numpad-btn" data-value="9" style="padding: 16px;">9</button>
-								<button class="btn numpad-btn" data-value="4" style="padding: 16px;">4</button>
-								<button class="btn numpad-btn" data-value="5" style="padding: 16px;">5</button>
-								<button class="btn numpad-btn" data-value="6" style="padding: 16px;">6</button>
-								<button class="btn numpad-btn" data-value="1" style="padding: 16px;">1</button>
-								<button class="btn numpad-btn" data-value="2" style="padding: 16px;">2</button>
-								<button class="btn numpad-btn" data-value="3" style="padding: 16px;">3</button>
-								<button class="btn numpad-btn" data-value="0" style="padding: 16px;">0</button>
-								<button class="btn numpad-btn" data-value="00" style="padding: 16px; font-size: 1rem !important;">00</button>
-								<button class="btn btn-warning numpad-clear" style="padding: 16px; border-radius: 12px !important; font-weight: 700;">
+							<div class="numpad" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; flex-shrink: 0;">
+								<button class="btn numpad-btn" data-value="7" style="padding: 14px;">7</button>
+								<button class="btn numpad-btn" data-value="8" style="padding: 14px;">8</button>
+								<button class="btn numpad-btn" data-value="9" style="padding: 14px;">9</button>
+								<button class="btn numpad-btn" data-value="4" style="padding: 14px;">4</button>
+								<button class="btn numpad-btn" data-value="5" style="padding: 14px;">5</button>
+								<button class="btn numpad-btn" data-value="6" style="padding: 14px;">6</button>
+								<button class="btn numpad-btn" data-value="1" style="padding: 14px;">1</button>
+								<button class="btn numpad-btn" data-value="2" style="padding: 14px;">2</button>
+								<button class="btn numpad-btn" data-value="3" style="padding: 14px;">3</button>
+								<button class="btn numpad-btn" data-value="0" style="padding: 14px;">0</button>
+								<button class="btn numpad-btn" data-value="00" style="padding: 14px; font-size: 1rem !important;">00</button>
+								<button class="btn btn-warning numpad-clear" style="padding: 14px; border-radius: 12px !important; font-weight: 700;">
 									<i class="fa fa-backspace"></i>
 								</button>
 							</div>
 							
-							<div class="change-display" style="margin-top: 16px; display: none;">
+							<div class="change-display" style="margin-top: 12px; display: none; flex-shrink: 0;">
 								<div style="display: flex; justify-content: space-between; align-items: center;">
-									<span style="font-weight: 600; font-size: 14px;"><i class="fa fa-exchange" style="margin-right: 8px;"></i>Change to Return</span>
-									<span class="change-amount" style="font-weight: 800; font-size: 24px;">₹0.00</span>
+									<span style="font-weight: 600; font-size: 13px;"><i class="fa fa-exchange" style="margin-right: 6px;"></i>Change</span>
+									<span class="change-amount" style="font-weight: 800; font-size: 20px;">₹0.00</span>
 								</div>
 							</div>
 						</div>
