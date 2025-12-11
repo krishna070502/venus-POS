@@ -303,7 +303,7 @@ class POSBilling {
 					height: calc(100vh - 120px);
 				}
 				
-				/* Medium screens (tablets) */
+				/* Large tablets & laptops (1200px - 1400px) */
 				@media (max-width: 1400px) {
 					.pos-main-layout {
 						grid-template-columns: 280px 1fr 340px;
@@ -314,26 +314,122 @@ class POSBilling {
 					.product-card { padding: 16px !important; }
 				}
 				
-				/* Small screens */
+				/* Medium screens (1024px - 1200px) */
 				@media (max-width: 1200px) {
 					.pos-main-layout {
-						grid-template-columns: 260px 1fr 320px;
+						grid-template-columns: 240px 1fr 300px;
 						gap: 10px;
-						height: calc(100vh - 100px);
+						height: calc(100vh - 95px);
 					}
-					.pos-container { padding: 12px; }
-					.numpad-btn { padding: 14px !important; font-size: 1.1rem !important; }
+					.pos-container { padding: 10px; }
+					.pos-header { padding: 12px 18px; margin-bottom: 10px; }
+					.numpad-btn { padding: 12px !important; font-size: 1rem !important; }
+					.product-card { padding: 14px !important; }
+					.products-grid { gap: 10px !important; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)) !important; }
 				}
 				
-				/* Extra small screens */
+				/* Tablet landscape (900px - 1024px) */
 				@media (max-width: 1024px) {
+					.pos-container { padding: 8px; height: 100vh; }
+					.pos-header { padding: 10px 14px; margin-bottom: 8px; border-radius: 10px; }
+					.pos-header h2 { font-size: 1.1rem; }
+					.pos-header p { display: none; }
 					.pos-main-layout {
-						grid-template-columns: 1fr 1fr;
-						grid-template-rows: auto 1fr;
-						height: calc(100vh - 100px);
+						grid-template-columns: 220px 1fr 280px;
+						gap: 8px;
+						height: calc(100vh - 70px);
+					}
+					.pos-panel { padding: 12px !important; border-radius: 10px !important; }
+					.numpad-btn { padding: 10px !important; font-size: 0.95rem !important; border-radius: 8px !important; }
+					.numpad { gap: 6px !important; }
+					.product-card { padding: 10px !important; border-radius: 10px !important; }
+					.product-card > div:first-child { font-size: 36px !important; margin-bottom: 6px !important; }
+					.product-card h5 { font-size: 12px !important; margin-bottom: 4px !important; }
+					.products-grid { gap: 8px !important; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)) !important; }
+					.cart-items { margin-bottom: 10px !important; }
+					.summary-card { padding: 12px !important; margin-bottom: 10px !important; }
+					.checkout-btn { padding: 12px !important; font-size: 0.85rem !important; }
+					.clear-cart-btn { padding: 10px !important; }
+					.payment-amount-input { font-size: 22px !important; padding: 10px !important; }
+					.shop-selector, .payment-mode-selector { margin-bottom: 12px !important; }
+					.payment-mode-btn { padding: 10px 8px !important; font-size: 12px !important; }
+					.change-display { padding: 10px !important; margin-top: 10px !important; }
+					.change-display .change-amount { font-size: 18px !important; }
+				}
+				
+				/* Tablet portrait (768px - 900px) */
+				@media (max-width: 900px) {
+					.pos-container { padding: 6px; }
+					.pos-header { padding: 8px 12px; margin-bottom: 6px; }
+					.pos-header h2 { font-size: 1rem; }
+					.pos-main-layout {
+						grid-template-columns: 200px 1fr 240px;
+						gap: 6px;
+						height: calc(100vh - 60px);
+					}
+					.pos-panel { padding: 10px !important; }
+					.numpad-btn { padding: 8px !important; font-size: 0.9rem !important; }
+					.numpad { gap: 4px !important; }
+					.product-card { padding: 8px !important; }
+					.product-card > div:first-child { font-size: 28px !important; margin-bottom: 4px !important; }
+					.product-card h5 { font-size: 11px !important; line-height: 1.2 !important; }
+					.product-card .badge-stock, .product-card .badge-out-stock { font-size: 9px !important; padding: 4px 8px !important; }
+					.products-grid { gap: 6px !important; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)) !important; }
+					.cart-items { margin-bottom: 8px !important; }
+					.cart-item { padding: 8px !important; }
+					.summary-card { padding: 10px !important; margin-bottom: 8px !important; }
+					.checkout-btn { padding: 10px !important; font-size: 0.8rem !important; margin-bottom: 6px !important; }
+					.clear-cart-btn { padding: 8px !important; font-size: 12px !important; }
+					.payment-amount-input { font-size: 18px !important; padding: 8px !important; }
+					.shop-selector, .payment-mode-selector { margin-bottom: 10px !important; }
+					.payment-mode-btn { padding: 8px 6px !important; font-size: 11px !important; }
+					#shop-select { padding: 8px 10px !important; font-size: 12px !important; }
+					.btn-exit-pos { width: 36px !important; height: 36px !important; }
+					.change-display { padding: 8px !important; margin-top: 8px !important; }
+					.change-display .change-amount { font-size: 16px !important; }
+					.search-box { padding: 10px 12px !important; font-size: 13px !important; }
+				}
+				
+				/* Small tablet / Large phone (below 768px) - 2 column layout */
+				@media (max-width: 768px) {
+					.pos-main-layout {
+						grid-template-columns: 1fr 220px;
+						grid-template-rows: 1fr;
+						height: calc(100vh - 55px);
 					}
 					.numpad-panel { display: none !important; }
 					.cart-panel { grid-row: 1 / -1; }
+					.pos-header { padding: 6px 10px; margin-bottom: 5px; }
+					.pos-header h2 { font-size: 0.9rem; }
+				}
+				
+				/* Dialog/Modal styles for tablets */
+				.modal-dialog.tablet-optimized {
+					max-height: 90vh !important;
+					margin: 5vh auto !important;
+				}
+				.modal-dialog.tablet-optimized .modal-body {
+					max-height: calc(90vh - 120px) !important;
+					overflow-y: auto !important;
+					padding: 12px !important;
+				}
+				@media (max-width: 1024px) {
+					.modal-dialog { max-width: 85vw !important; margin: 2vh auto !important; }
+					.modal-content { border-radius: 12px !important; }
+					.modal-header { padding: 12px 16px !important; }
+					.modal-body { padding: 12px 16px !important; max-height: calc(96vh - 130px) !important; overflow-y: auto !important; }
+					.modal-footer { padding: 10px 16px !important; }
+					.modal-title { font-size: 16px !important; }
+					.quick-numpad { gap: 6px !important; }
+					.quick-numpad .btn { padding: 10px !important; font-size: 16px !important; }
+				}
+				@media (max-width: 900px) {
+					.modal-dialog { max-width: 90vw !important; margin: 1vh auto !important; }
+					.modal-body { padding: 10px !important; max-height: calc(98vh - 110px) !important; }
+					.modal-header { padding: 10px 12px !important; }
+					.modal-footer { padding: 8px 12px !important; }
+					.quick-numpad { gap: 4px !important; }
+					.quick-numpad .btn { padding: 8px !important; font-size: 14px !important; }
 				}
 				
 				/* Animation Keyframes */
@@ -660,11 +756,11 @@ class POSBilling {
 					fieldtype: 'HTML',
 					fieldname: 'product_info',
 					options: `
-						<div style="text-align: center; padding: 10px 0 20px 0; border-bottom: 2px dashed #e5e7eb; margin-bottom: 20px;">
-							<div style="font-size: 48px; margin-bottom: 8px;">🍗</div>
-							<div style="font-size: 18px; font-weight: 700; color: #1f2937;">${product.product_name || product.product}</div>
-							<div style="color: #667eea; font-weight: 600; margin-top: 4px;">₹${rate_per_kg} /kg</div>
-							<div style="color: #6b7280; font-size: 13px; margin-top: 4px;">Available: ${available_stock.toFixed(2)} kg</div>
+						<div class="dialog-product-info" style="text-align: center; padding: 8px 0 12px 0; border-bottom: 2px dashed #e5e7eb; margin-bottom: 12px;">
+							<div style="font-size: 36px; margin-bottom: 4px;">🍗</div>
+							<div style="font-size: 16px; font-weight: 700; color: #1f2937;">${product.product_name || product.product}</div>
+							<div style="color: #667eea; font-weight: 600; font-size: 14px;">₹${rate_per_kg} /kg</div>
+							<div style="color: #6b7280; font-size: 12px;">Available: ${available_stock.toFixed(2)} kg</div>
 						</div>
 					`
 				},
@@ -672,14 +768,14 @@ class POSBilling {
 					fieldtype: 'HTML',
 					fieldname: 'mode_selector',
 					options: `
-						<div style="margin-bottom: 20px;">
-							<label style="font-weight: 600; display: block; margin-bottom: 12px; color: #374151;">Select Entry Mode</label>
-							<div style="display: flex; gap: 10px;">
-								<button class="btn btn-default sale-mode-btn active" data-mode="weight" style="flex: 1; padding: 14px; font-weight: 600; border-radius: 8px; border: 2px solid #667eea; background: #667eea; color: white;">
-									<i class="fa fa-balance-scale"></i> By Weight (Kg)
+						<div style="margin-bottom: 12px;">
+							<label style="font-weight: 600; display: block; margin-bottom: 8px; color: #374151; font-size: 13px;">Select Entry Mode</label>
+							<div style="display: flex; gap: 8px;">
+								<button class="btn btn-default sale-mode-btn active" data-mode="weight" style="flex: 1; padding: 10px; font-weight: 600; border-radius: 8px; border: 2px solid #667eea; background: #667eea; color: white; font-size: 13px;">
+									<i class="fa fa-balance-scale"></i> By Weight
 								</button>
-								<button class="btn btn-default sale-mode-btn" data-mode="amount" style="flex: 1; padding: 14px; font-weight: 600; border-radius: 8px; border: 2px solid #e5e7eb;">
-									<i class="fa fa-inr"></i> By Amount (₹)
+								<button class="btn btn-default sale-mode-btn" data-mode="amount" style="flex: 1; padding: 10px; font-weight: 600; border-radius: 8px; border: 2px solid #e5e7eb; font-size: 13px;">
+									<i class="fa fa-inr"></i> By Amount
 								</button>
 							</div>
 						</div>
@@ -690,21 +786,21 @@ class POSBilling {
 					fieldname: 'input_section',
 					options: `
 						<div class="weight-input-section">
-							<label style="font-weight: 600; display: block; margin-bottom: 8px; color: #374151;">Enter Weight (Kg)</label>
+							<label style="font-weight: 600; display: block; margin-bottom: 6px; color: #374151; font-size: 13px;">Enter Weight (Kg)</label>
 							<input type="text" id="weight-input" class="form-control" value="0.5"
-								style="font-size: 24px; padding: 12px; text-align: center; font-weight: 700; border: 2px solid #e8eaf6; border-radius: 8px;">
-							<div style="margin-top: 12px; padding: 12px; background: #f0fdf4; border-radius: 8px; text-align: center;">
-								<span style="color: #6b7280;">Amount:</span>
-								<span id="calculated-amount" style="font-weight: 700; color: #10b981; font-size: 18px; margin-left: 8px;">₹${(0.5 * rate_per_kg).toFixed(2)}</span>
+								style="font-size: 20px; padding: 10px; text-align: center; font-weight: 700; border: 2px solid #e8eaf6; border-radius: 8px;">
+							<div style="margin-top: 8px; padding: 8px; background: #f0fdf4; border-radius: 8px; text-align: center;">
+								<span style="color: #6b7280; font-size: 12px;">Amount:</span>
+								<span id="calculated-amount" style="font-weight: 700; color: #10b981; font-size: 16px; margin-left: 6px;">₹${(0.5 * rate_per_kg).toFixed(2)}</span>
 							</div>
 						</div>
 						<div class="amount-input-section" style="display: none;">
-							<label style="font-weight: 600; display: block; margin-bottom: 8px; color: #374151;">Enter Amount (₹)</label>
+							<label style="font-weight: 600; display: block; margin-bottom: 6px; color: #374151; font-size: 13px;">Enter Amount (₹)</label>
 							<input type="text" id="amount-input" class="form-control" value="100"
-								style="font-size: 24px; padding: 12px; text-align: center; font-weight: 700; border: 2px solid #e8eaf6; border-radius: 8px;">
-							<div style="margin-top: 12px; padding: 12px; background: #eff6ff; border-radius: 8px; text-align: center;">
-								<span style="color: #6b7280;">Weight:</span>
-								<span id="calculated-weight" style="font-weight: 700; color: #3b82f6; font-size: 18px; margin-left: 8px;">${(100 / rate_per_kg).toFixed(3)} kg</span>
+								style="font-size: 20px; padding: 10px; text-align: center; font-weight: 700; border: 2px solid #e8eaf6; border-radius: 8px;">
+							<div style="margin-top: 8px; padding: 8px; background: #eff6ff; border-radius: 8px; text-align: center;">
+								<span style="color: #6b7280; font-size: 12px;">Weight:</span>
+								<span id="calculated-weight" style="font-weight: 700; color: #3b82f6; font-size: 16px; margin-left: 6px;">${(100 / rate_per_kg).toFixed(3)} kg</span>
 							</div>
 						</div>
 					`
@@ -713,24 +809,24 @@ class POSBilling {
 					fieldtype: 'HTML',
 					fieldname: 'numpad_section',
 					options: `
-						<div style="margin-top: 16px;">
-							<div class="quick-numpad" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
-								<button class="btn btn-default quick-num" data-value="1" style="padding: 12px; font-size: 18px; font-weight: 600; border-radius: 6px;">1</button>
-								<button class="btn btn-default quick-num" data-value="2" style="padding: 12px; font-size: 18px; font-weight: 600; border-radius: 6px;">2</button>
-								<button class="btn btn-default quick-num" data-value="3" style="padding: 12px; font-size: 18px; font-weight: 600; border-radius: 6px;">3</button>
-								<button class="btn btn-default quick-num" data-value="0.5" style="padding: 12px; font-size: 14px; font-weight: 600; border-radius: 6px; background: #f0fdf4; color: #10b981;">+0.5</button>
-								<button class="btn btn-default quick-num" data-value="4" style="padding: 12px; font-size: 18px; font-weight: 600; border-radius: 6px;">4</button>
-								<button class="btn btn-default quick-num" data-value="5" style="padding: 12px; font-size: 18px; font-weight: 600; border-radius: 6px;">5</button>
-								<button class="btn btn-default quick-num" data-value="6" style="padding: 12px; font-size: 18px; font-weight: 600; border-radius: 6px;">6</button>
-								<button class="btn btn-default quick-num" data-value="100" style="padding: 12px; font-size: 14px; font-weight: 600; border-radius: 6px; background: #eff6ff; color: #3b82f6;">+100</button>
-								<button class="btn btn-default quick-num" data-value="7" style="padding: 12px; font-size: 18px; font-weight: 600; border-radius: 6px;">7</button>
-								<button class="btn btn-default quick-num" data-value="8" style="padding: 12px; font-size: 18px; font-weight: 600; border-radius: 6px;">8</button>
-								<button class="btn btn-default quick-num" data-value="9" style="padding: 12px; font-size: 18px; font-weight: 600; border-radius: 6px;">9</button>
-								<button class="btn btn-default quick-num" data-value="50" style="padding: 12px; font-size: 14px; font-weight: 600; border-radius: 6px; background: #eff6ff; color: #3b82f6;">+50</button>
-								<button class="btn btn-default quick-num" data-value="." style="padding: 12px; font-size: 18px; font-weight: 600; border-radius: 6px;">.</button>
-								<button class="btn btn-default quick-num" data-value="0" style="padding: 12px; font-size: 18px; font-weight: 600; border-radius: 6px;">0</button>
-								<button class="btn btn-warning quick-clear" style="padding: 12px; font-size: 16px; font-weight: 600; border-radius: 6px;"><i class="fa fa-backspace"></i></button>
-								<button class="btn btn-default quick-num" data-value="200" style="padding: 12px; font-size: 14px; font-weight: 600; border-radius: 6px; background: #eff6ff; color: #3b82f6;">+200</button>
+						<div style="margin-top: 10px;">
+							<div class="quick-numpad" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;">
+								<button class="btn btn-default quick-num" data-value="1" style="padding: 10px; font-size: 16px; font-weight: 600; border-radius: 6px;">1</button>
+								<button class="btn btn-default quick-num" data-value="2" style="padding: 10px; font-size: 16px; font-weight: 600; border-radius: 6px;">2</button>
+								<button class="btn btn-default quick-num" data-value="3" style="padding: 10px; font-size: 16px; font-weight: 600; border-radius: 6px;">3</button>
+								<button class="btn btn-default quick-num" data-value="0.5" style="padding: 10px; font-size: 12px; font-weight: 600; border-radius: 6px; background: #f0fdf4; color: #10b981;">+0.5</button>
+								<button class="btn btn-default quick-num" data-value="4" style="padding: 10px; font-size: 16px; font-weight: 600; border-radius: 6px;">4</button>
+								<button class="btn btn-default quick-num" data-value="5" style="padding: 10px; font-size: 16px; font-weight: 600; border-radius: 6px;">5</button>
+								<button class="btn btn-default quick-num" data-value="6" style="padding: 10px; font-size: 16px; font-weight: 600; border-radius: 6px;">6</button>
+								<button class="btn btn-default quick-num" data-value="100" style="padding: 10px; font-size: 12px; font-weight: 600; border-radius: 6px; background: #eff6ff; color: #3b82f6;">+100</button>
+								<button class="btn btn-default quick-num" data-value="7" style="padding: 10px; font-size: 16px; font-weight: 600; border-radius: 6px;">7</button>
+								<button class="btn btn-default quick-num" data-value="8" style="padding: 10px; font-size: 16px; font-weight: 600; border-radius: 6px;">8</button>
+								<button class="btn btn-default quick-num" data-value="9" style="padding: 10px; font-size: 16px; font-weight: 600; border-radius: 6px;">9</button>
+								<button class="btn btn-default quick-num" data-value="50" style="padding: 10px; font-size: 12px; font-weight: 600; border-radius: 6px; background: #eff6ff; color: #3b82f6;">+50</button>
+								<button class="btn btn-default quick-num" data-value="." style="padding: 10px; font-size: 16px; font-weight: 600; border-radius: 6px;">.</button>
+								<button class="btn btn-default quick-num" data-value="0" style="padding: 10px; font-size: 16px; font-weight: 600; border-radius: 6px;">0</button>
+								<button class="btn btn-warning quick-clear" style="padding: 10px; font-size: 14px; font-weight: 600; border-radius: 6px;"><i class="fa fa-backspace"></i></button>
+								<button class="btn btn-default quick-num" data-value="200" style="padding: 10px; font-size: 12px; font-weight: 600; border-radius: 6px; background: #eff6ff; color: #3b82f6;">+200</button>
 							</div>
 						</div>
 					`
