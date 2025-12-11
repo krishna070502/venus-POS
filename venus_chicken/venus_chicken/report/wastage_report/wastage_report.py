@@ -86,6 +86,19 @@ def get_data(filters):
 	"""Get wastage data grouped by date and shop"""
 	conditions = get_conditions(filters)
 
+	# Apply shop-based access control for Shop Managers
+	# Check if user has role Shop Manager but not System Manager
+	user_roles = frappe.get_roles(frappe.session.user)
+	if "Shop Manager" in user_roles and "System Manager" not in user_roles:
+		# Get shops where user is shop_manager
+		user_shops = frappe.get_all("Shop", filters={"shop_manager": frappe.session.user}, pluck="name")
+		if user_shops:
+			shop_condition = "pe.shop IN ({})".format(", ".join(f"'{shop}'" for shop in user_shops))
+			conditions = conditions + " AND " + shop_condition if conditions else " AND " + shop_condition
+		else:
+			# User has no shops assigned, return empty
+			return []
+
 	# Get all submitted processing entries
 	entries = frappe.db.sql(
 		f"""
