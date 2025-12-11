@@ -10,7 +10,9 @@ def execute(filters=None):
 	"""Execute wastage report"""
 	columns = get_columns()
 	data = get_data(filters)
-	return columns, data
+	chart = get_chart_data(data)
+	summary = get_summary(data)
+	return columns, data, None, chart, summary
 
 
 def get_columns():
@@ -159,3 +161,91 @@ def get_conditions(filters):
 		conditions.append("pe.shop = %(shop)s")
 
 	return " AND " + " AND ".join(conditions) if conditions else ""
+
+
+def get_summary(data):
+	"""Generate summary cards"""
+	if not data:
+		return []
+
+	total_raw = sum(flt(row.get("raw_weight_kg", 0)) for row in data)
+	total_processed = sum(flt(row.get("processed_weight_kg", 0)) for row in data)
+	total_actual_wastage = sum(flt(row.get("actual_wastage_kg", 0)) for row in data)
+	total_allowed_wastage = sum(flt(row.get("allowed_wastage_kg", 0)) for row in data)
+
+	avg_actual_pct = (total_actual_wastage / total_raw * 100) if total_raw > 0 else 0
+	avg_allowed_pct = (total_allowed_wastage / total_raw * 100) if total_raw > 0 else 0
+
+	excess_wastage = max(0, total_actual_wastage - total_allowed_wastage)
+	good_count = sum(1 for row in data if "Good" in row.get("status", ""))
+	over_count = sum(1 for row in data if "Over" in row.get("status", ""))
+
+	return [
+		{
+			"value": flt(total_raw, 2),
+			"label": _("Total Raw Weight (Kg)"),
+			"datatype": "Float",
+			"indicator": "blue",
+		},
+		{
+			"value": flt(total_actual_wastage, 2),
+			"label": _("Total Actual Wastage (Kg)"),
+			"datatype": "Float",
+			"indicator": "red",
+		},
+		{
+			"value": flt(avg_actual_pct, 2),
+			"label": _("Avg Actual Wastage %"),
+			"datatype": "Percent",
+			"indicator": "red" if avg_actual_pct > avg_allowed_pct else "green",
+		},
+		{
+			"value": flt(avg_allowed_pct, 2),
+			"label": _("Avg Allowed Wastage %"),
+			"datatype": "Percent",
+			"indicator": "orange",
+		},
+		{
+			"value": flt(excess_wastage, 2),
+			"label": _("Excess Wastage (Kg)"),
+			"datatype": "Float",
+			"indicator": "red" if excess_wastage > 0 else "green",
+		},
+		{"value": good_count, "label": _("Good Entries"), "datatype": "Int", "indicator": "green"},
+		{"value": over_count, "label": _("Over-Wastage Entries"), "datatype": "Int", "indicator": "red"},
+	]
+
+
+def get_chart_data(data):
+	"""Generate chart comparing actual vs allowed wastage percentage"""
+	if not data:
+		return None
+
+	# Get top 10 entries or all if less than 10
+	top_entries = data[:10] if len(data) > 10 else data
+
+	labels = []
+	actual_values = []
+	allowed_values = []
+
+	for row in top_entries:
+		entry_label = f"{row.get('shop', 'N/A')} - {row.get('date_or_entry', '')[-8:]}"
+		labels.append(entry_label)
+		actual_values.append(flt(row.get("actual_wastage_pct", 0), 2))
+		allowed_values.append(flt(row.get("allowed_wastage_pct", 0), 2))
+
+	chart = {
+		"data": {
+			"labels": labels,
+			"datasets": [
+				{"name": "Actual Wastage %", "values": actual_values},
+				{"name": "Allowed Wastage %", "values": allowed_values},
+			],
+		},
+		"type": "bar",
+		"colors": ["#dc2626", "#fb923c"],
+		"barOptions": {"stacked": 0},
+		"height": 300,
+	}
+
+	return chart
