@@ -17,15 +17,9 @@ def execute(filters=None):
 		return [], []
 
 	columns = get_columns()
-	data = get_data(filters)
+	data, total_debit, total_credit = get_data(filters)
 
-	# Calculate opening and closing balances
-	total_debit = sum(
-		flt(row.get("debit") or 0) for row in data if isinstance(row.get("debit"), (int, float))
-	)
-	total_credit = sum(
-		flt(row.get("credit") or 0) for row in data if isinstance(row.get("credit"), (int, float))
-	)
+	# Calculate closing balance
 	closing_balance = total_debit - total_credit
 
 	# Add summary cards with opening and closing balances
@@ -132,10 +126,11 @@ def get_data(filters=None):
 	if not filters:
 		filters = {}
 
-	conditions = get_conditions(filters)
+	purchase_conditions = get_purchase_conditions(filters)
+	payment_conditions = get_payment_conditions(filters)
 
 	# Get all purchase entries (debits)
-	query = f"""
+	purchase_query = f"""
 		SELECT
 			pe.posting_date,
 			'Purchase Entry' as voucher_type,
@@ -143,18 +138,42 @@ def get_data(filters=None):
 			pe.supplier,
 			pe.shop,
 			pe.total_amount as debit,
-			0 as credit,
-			pe.docstatus
+			0 as credit
 		FROM
 			`tabPurchase Entry` pe
 		WHERE
 			pe.docstatus = 1
-			{" AND " + conditions if conditions and conditions != "1=1" else ""}
-		ORDER BY
-			pe.supplier, pe.posting_date, pe.name
+			{" AND " + purchase_conditions if purchase_conditions and purchase_conditions != "1=1" else ""}
 	"""
 
-	entries = frappe.db.sql(query, filters, as_dict=1)
+	# Get all supplier payments (credits)
+	payment_query = f"""
+		SELECT
+			sp.posting_date,
+			'Supplier Payment' as voucher_type,
+			sp.name as voucher_no,
+			sp.supplier,
+			NULL as shop,
+			0 as debit,
+			sp.payment_amount as credit
+		FROM
+			`tabSupplier Payment` sp
+		WHERE
+			sp.docstatus = 1
+			{" AND " + payment_conditions if payment_conditions and payment_conditions != "1=1" else ""}
+	"""
+
+	# Combine both queries with UNION ALL
+	combined_query = f"""
+		SELECT * FROM (
+			{purchase_query}
+			UNION ALL
+			{payment_query}
+		) as combined
+		ORDER BY supplier, posting_date, voucher_type DESC, voucher_no
+	"""
+
+	entries = frappe.db.sql(combined_query, filters, as_dict=1)
 
 	# Group by supplier and calculate running balance
 	supplier_data = {}
@@ -192,7 +211,21 @@ def get_data(filters=None):
 					]
 				)
 			else:
-				remarks = "Payment"
+				# For Supplier Payment
+				payment_info = frappe.db.get_value(
+					"Supplier Payment",
+					entry.voucher_no,
+					["payment_mode", "reference_no", "remarks"],
+					as_dict=1,
+				)
+				if payment_info:
+					remarks = f"Payment via {payment_info.payment_mode}"
+					if payment_info.reference_no:
+						remarks += f" (Ref: {payment_info.reference_no})"
+					if payment_info.remarks:
+						remarks += f" - {payment_info.remarks}"
+				else:
+					remarks = "Payment"
 
 			data.append(
 				{
@@ -200,19 +233,52 @@ def get_data(filters=None):
 					"voucher_type": entry.voucher_type,
 					"voucher_no": entry.voucher_no,
 					"shop": entry.shop,
-					"remarks": remarks[:200],
+					"remarks": remarks[:200] if remarks else "",
 					"debit": flt(entry.debit) if entry.debit else "",
 					"credit": flt(entry.credit) if entry.credit else "",
 					"balance": running_balance,
 				}
 			)
 
-	return data
+	# Calculate totals from transaction data (before adding Total row)
+	total_debit = sum(flt(row.get("debit") or 0) for row in data)
+	total_credit = sum(flt(row.get("credit") or 0) for row in data)
+
+	# Add empty row as spacer, then Total row
+	if data:
+		# Spacer row - use None to prevent showing ₹ 0.00
+		data.append(
+			{
+				"posting_date": None,
+				"voucher_type": "",
+				"voucher_no": None,
+				"shop": None,
+				"remarks": "",
+				"debit": None,
+				"credit": None,
+				"balance": None,
+			}
+		)
+		# Total row
+		data.append(
+			{
+				"posting_date": "",
+				"voucher_type": "<b>Total</b>",
+				"voucher_no": "",
+				"shop": "",
+				"remarks": "",
+				"debit": total_debit,
+				"credit": total_credit,
+				"balance": total_debit - total_credit,
+			}
+		)
+
+	return data, total_debit, total_credit
 
 
-def get_conditions(filters):
-	"""Build SQL WHERE conditions from filters"""
-	conditions = ["pe.docstatus IN (0, 1)"]
+def get_purchase_conditions(filters):
+	"""Build SQL WHERE conditions for Purchase Entry"""
+	conditions = []
 
 	if filters.get("from_date"):
 		conditions.append("pe.posting_date >= %(from_date)s")
@@ -225,5 +291,23 @@ def get_conditions(filters):
 
 	if filters.get("shop"):
 		conditions.append("pe.shop = %(shop)s")
+
+	return " AND ".join(conditions) if conditions else "1=1"
+
+
+def get_payment_conditions(filters):
+	"""Build SQL WHERE conditions for Supplier Payment"""
+	conditions = []
+
+	if filters.get("from_date"):
+		conditions.append("sp.posting_date >= %(from_date)s")
+
+	if filters.get("to_date"):
+		conditions.append("sp.posting_date <= %(to_date)s")
+
+	if filters.get("supplier"):
+		conditions.append("sp.supplier = %(supplier)s")
+
+	# Note: Supplier Payment doesn't have shop field, so we skip shop filter for payments
 
 	return " AND ".join(conditions) if conditions else "1=1"
